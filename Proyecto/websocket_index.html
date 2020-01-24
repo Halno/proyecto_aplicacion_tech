@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+let socket = new WebSocket("ws://127.0.0.1:9990");
+
+socket.onopen = function(e) {
+  alert("[open] Connection established");
+  alert("Sending to server");
+  console.log("Conexion abierta");
+};
+
+var g_idMensaje = 0;
+
+
+socket.onmessage = function(event)
+{
+  alert(`[message] Data received from server: ${event.data}`);
+  
+  console.log(event.data);
+  var object = JSON.parse(event.data);
+  
+  //document.getElementById("received_messages").innerHTML += "<div>" + object.message + "</div>";
+  
+};
+
+socket.onclose = function(event)
+{
+  if (event.wasClean)
+  {
+    //alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+  } else
+  {
+    // e.g. server process killed or network down
+    // event.code is usually 1006 in this case
+    //alert('[close] Connection died');
+  }
+};
+
+socket.onerror = function(error)
+{
+  alert(`[error] ${error.message}`);
+};
+
+function trigger()
+{
+    var id_mensaje = autocalcularId();
+    var id_tarjeta = 4360;
+
+    var mensajeJson = {tipo: "trigger", id: id_mensaje}
+    socket.send( JSON.stringify(mensajeJson));
+};
+
+/*
+function enviarLogin()
+{
+    var id_mensaje = autocalcularId();
+    var nombre_Usuario = "HH";
+    var contrasenya = "GGG";
+
+    var mensajeJson = {tipo: "login", id: id_mensaje, usuario: nombre_Usuario, contrasenya_Usuario: contrasenya}
+    socket.send( JSON.stringify(mensajeJson));
+};
+
+function enviarLogout()
+{
+    var id_mensaje = autocalcularId();
+
+    var mensajeJson = {tipo: "logout", id: id_mensaje}
+    socket.send( JSON.stringify(mensajeJson));
+};
+
+
+function enviarRegistro()
+{
+    var id_mensaje = autocalcularId();
+    var nombre_Usuario = "HHH";
+    var contrasenya = "GGG";
+
+    var mensajeJson = {tipo: "registro", id: id_mensaje, usuario: nombre_Usuario, contrasenya_Usuario: contrasenya}
+    socket.send( JSON.stringify(mensajeJson));
+};
+
+function matchmaking()
+{
+    var id_mensaje = autocalcularId();
+
+    var mensajeJson = {tipo: "matchmaking", id: id_mensaje}
+    socket.send( JSON.stringify(mensajeJson));
+}
+
+function mensajeChat()
+{
+    var id_mensaje = autocalcularId();
+    var mensaje = "mensaje";
+
+    var mensajeJson = {tipo: "mensajeChat", id: id_mensaje, chat: mensaje}
+    socket.send( JSON.stringify(mensajeJson));
+}
+*/
+
+function autocalcularId()
+{
+    g_idMensaje++;
+    return g_idMensaje;
+};
+</script>
+</head>
+<body>
+
+<div id="received_messages">
+</div>
+
+
+</body>
+</html>
