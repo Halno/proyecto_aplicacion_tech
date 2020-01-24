@@ -72,7 +72,7 @@ bool Usuario::remove()
     return result;
 }
 
-bool Usuario::registro(QString nombre, QString password)
+bool Usuario::registro()
 {
     //Se llama a esta función cuando un usuario intenta registrarse.
     //1. La función comprueba que el nombre de usuario no se encuentre en uso.

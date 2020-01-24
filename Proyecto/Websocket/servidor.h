@@ -9,7 +9,7 @@ class Servidor
 public:
 
     Servidor();
-    void iniciarServidor();
+    int iniciarServidor();
     int autocalcularIdServidor();
 };
 

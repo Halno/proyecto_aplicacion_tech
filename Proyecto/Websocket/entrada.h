@@ -14,7 +14,6 @@ class Entrada
 public:
     Entrada();
     void load(int id);
-    bool update();
     bool insert();
     bool remove();
 };

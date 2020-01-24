@@ -1,6 +1,9 @@
 QT -= gui
 QT += sql
 
+TARGET = tech
+TEMPLATE = app
+
 CONFIG += c++11 console
 CONFIG -= app_bundle
 

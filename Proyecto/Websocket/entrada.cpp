@@ -25,42 +25,31 @@ void Entrada::load(int id)
     } // end if
 }
 
-bool Entrada::update()
-{
-    QSqlQuery q;
 
-        /// UPDATE
-        ///
-        q.prepare("UPDATE entrada SET nombre_usuario = :nombreUsuario WHERE id_usuario = :idUsuario");
-        q.bindValue(":idUsuario", m_idUsuarioEntrada);
-        q.bindValue(":nombreUsuario", m_nombreUsuario);
 
-        bool result {q.exec()};
-        return result;
-}
-
-bool Usuario::insert()
+bool Entrada::insert()
 {
     QSqlQuery q;
 
     /// INSERT
-    q.prepare("INSERT INTO usuario (nombre_usuario, password_usuario) VALUES (:nombreUsuario, :passwordUsuario)");
-    q.bindValue(":nombreUsuario", m_nombreUsuario);
-    q.bindValue(":passwordUsuario", m_passwordUsuario);
+    q.prepare("INSERT INTO entrada (id_seccion_entrada, id_usuario_entrada, contenido_entrada) VALUES (:idSeccion, :idUsuario, :contenidoEntrada)");
+    q.bindValue(":idSeccion", m_idSeccionEntrada);
+    q.bindValue(":idUsuario", m_idUsuarioEntrada);
+    q.bindValue(":contenidoEntrada", m_contenidoEntrada);
 
     bool result {q.exec()};
     return result;
 }
 
-bool Usuario::remove()
+bool Entrada::remove()
 {
     QSqlQuery q;
     bool result {false};
 
-    if (m_idUsuario > 0)
+    if (m_idEntrada > 0)
     {
-        q.prepare("DELETE FROM usuario WHERE id_usuario = :idUsuario");
-        q.bindValue(":idUsuario", m_idUsuario);
+        q.prepare("DELETE FROM entrada WHERE id_entrada = :idEntrada");
+        q.bindValue(":idEntrada", m_idEntrada);
         result = q.exec();
     } // end if
 
