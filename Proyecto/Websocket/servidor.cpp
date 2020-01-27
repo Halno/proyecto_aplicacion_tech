@@ -33,8 +33,8 @@ bool exists(const JSON& json, const std::string& key)
 
 
 ///Para probar, emplear la función "enviarLogin()" desde el navegador. Si usuario y contraseña no coinciden,
-/// el socket devuelve error. Por defecto, devolverá error al insertar como nombre "HHH". Solo podemos
-/// iniciar sesión si no lo hemos hecho antes.
+/// el socket devuelve error. Solo podemos iniciar sesión si no lo hemos hecho antes.
+
 
 JSON login(JSON receivedObject)
 {
@@ -44,8 +44,16 @@ JSON login(JSON receivedObject)
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["Error"] = 0;
 
+    std::string nombre=receivedObject["nombre"];
+    QString nombreUsuario = QString::fromUtf8(nombre.c_str());
 
-    if (receivedObject["usuario"] == "HHH")
+    std::string password=receivedObject["password"];
+    QString passwordUsuario = QString::fromUtf8(nombre.c_str());
+
+    Usuario user(nombreUsuario, passwordUsuario);
+
+
+    if (!user.login())
     {
         respuesta["Error"]= 1;
         respuesta["mensajeError"]= "Nombre de usuario y/o contraseña incorrecto(s).";
@@ -58,6 +66,8 @@ JSON login(JSON receivedObject)
         }
         else
         {
+            user.insert();
+
             respuesta["mensaje"] = "Has iniciado sesión con éxito";
             logeado=true;
         }
@@ -81,6 +91,8 @@ JSON logout(JSON receivedObject)
 
         if (logeado)
         {
+            Usuario user;
+            user.logout();
             respuesta["mensaje"]= "Has salido.";
             logeado=false;
         }
@@ -104,22 +116,22 @@ JSON registro(JSON receivedObject)
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["Error"] = 0;
 
+    std::string nombre=receivedObject["nombre"];
+    QString nombreUsuario = QString::fromUtf8(nombre.c_str());
 
-    if (receivedObject["usuario"] == "HHH")
+
+    if (Usuario::find(nombreUsuario))
     {
         respuesta["Error"]= 1;
         respuesta["mensajeError"]= "Nombre de usuario en uso. Elige otro.";
     }
     else
-    {
-
-        std::string nombre=receivedObject["nombre"];
+    {   
         std::string password=receivedObject["password"];
-
-        QString nombreUsuario = QString::fromUtf8(nombre.c_str());
         QString passwordUsuario = QString::fromUtf8(nombre.c_str());
-        Usuario u(nombreUsuario, passwordUsuario);
-        u.insert();
+
+        Usuario user(nombreUsuario, passwordUsuario);
+        user.insert();
 
         respuesta["mensaje"] = "Has completado el registro con éxito";
     }
@@ -133,15 +145,10 @@ JSON crearEntrada(JSON receivedObject)
 
     respuesta["idServidor"] = autocalcularIdServidor();
     respuesta["idCliente"] = receivedObject["id"];
-    respuesta["Error"] = 0;
-    if (respuesta["Error"]==0)
-    {
-        respuesta["mensaje"] = "Entrada creada.";
-    }
-    else
-    {
-        respuesta["mensaje"] = "Error al crear la entrada. Inténtalo de nuevo.";
-    }
+
+    //crearEntrada
+    respuesta["mensaje"] = "Entrada creada.";
+
 
     return respuesta;
 
@@ -201,14 +208,13 @@ int Servidor::iniciarServidor()
                                 if (exists(receivedObject, "tipo"))
                                 {
                                     std::string tipo = receivedObject["tipo"];
-                                    /*
+
                                     if (tipo=="login")
                                     {
                                         JSON respuesta = login(receivedObject);
-                                        //gestionador->login(receivedObject["usuario"], receivedObject["contrasenya"]);
                                         webSocket->send(respuesta.dump());
                                     }
-                                    */
+
 
                                     if (tipo=="crearEntrada")
                                     {
@@ -216,7 +222,11 @@ int Servidor::iniciarServidor()
                                         webSocket->send(respuesta.dump());
                                     }
 
-
+                                    if (tipo=="consultarSeccion")
+                                    {
+                                        JSON respuesta = consultarSeccion(receivedObject);
+                                        webSocket->send(respuesta.dump());
+                                    }
 
 
                                     if (tipo=="registro")
@@ -225,13 +235,10 @@ int Servidor::iniciarServidor()
                                         webSocket->send(respuesta.dump());
                                     }
 
-    //http://erickveil.github.io/2016/04/06/How-To-Manipulate-JSON-With-C++-and-Qt.html
 
                                     if (tipo=="logout")
                                     {
                                         JSON respuesta = logout(receivedObject);
-                                        //Usuario *nuevo_usuario;
-                                        //nuevo_usuario->load()
                                         webSocket->send(respuesta.dump());
                                     }
 

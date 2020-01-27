@@ -24,13 +24,14 @@ public:
     Usuario();
     Usuario(QString nombre, QString password);
     void load(int id);
+    static bool find(QString nombre);
     bool update();
     bool insert();
     bool remove();
 
 
     bool registro();
-    bool login(QString nombre, QString password);
+    bool login();
     bool logout();
     bool nuevaEntrada(JSON receivedObject);
 };

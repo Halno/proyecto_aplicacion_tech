@@ -31,14 +31,31 @@ void Usuario::load(int id)
     } // end if
 }
 
+bool Usuario::find(QString nombre)
+{
+    QSqlQuery orden;
+    orden.prepare("SELECT * FROM usuario WHERE nombre_usuario = :nombreUsuario LIMIT 1");
+    orden.bindValue(":nombreUsuario", nombre);
+    bool result {orden.exec()};
+
+    if (result)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 bool Usuario::update()
 {
     QSqlQuery q;
 
         /// UPDATE
-        q.prepare("UPDATE usuario SET nombre_usuario = :nombreUsuario WHERE id_usuario = :idUsuario");
+        q.prepare("UPDATE usuario SET password_usuario = :passwordUsuario WHERE id_usuario = :idUsuario");
         q.bindValue(":idUsuario", m_idUsuario);
-        q.bindValue(":codigoMatricula", m_nombreUsuario);
+        q.bindValue(":passwordUsuario", m_passwordUsuario);
 
         bool result {q.exec()};
         return result;
@@ -85,16 +102,24 @@ bool Usuario::registro()
 
 }
 
-bool Usuario::login(QString nombre, QString password)
+bool Usuario::login()
 {
-    //Se llama a esta función cuando un usuario intenta iniciar sesión.
 
-    //1. La función comprueba que el usuario y la contraseña coincidan en la BD.
+    QSqlQuery orden;
+    orden.prepare("SELECT * FROM usuario WHERE nombre_usuario = :nombreUsuario AND password_usuario = :passwordUsuario LIMIT 1");
+    orden.bindValue(":nombreUsuario", m_nombreUsuario);
+    orden.bindValue(":passwordUsuario", m_passwordUsuario);
+    bool result {orden.exec()};
 
-    //2. Si no coinciden con la BD, se le notifica al usuario para que vuelva a escribir sus
-    //   datos de inicio de sesión. (Devuelve false).
+    if (result)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 
-    //3. Si coinciden, el usuario inicia sesión. (Devuelve true). -> mirar main para información
 }
 
 bool Usuario::logout()
@@ -112,5 +137,6 @@ bool Usuario::logout()
 bool Usuario::nuevaEntrada()
 {
 
+    //Crea una entrada en la sección indicada.
 }
 
