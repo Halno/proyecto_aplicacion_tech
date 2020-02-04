@@ -134,9 +134,10 @@ bool Usuario::logout()
     //3. Si se encontraba logeado, el usuario cierra sesión. (Devuelve true).
 }
 
+/*
 bool Usuario::nuevaEntrada()
 {
 
     //Crea una entrada en la sección indicada.
 }
-
+*/
