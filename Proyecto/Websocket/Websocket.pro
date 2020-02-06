@@ -2,6 +2,7 @@ QT -= gui
 QT += sql
 
 
+TARGET = tech
 TEMPLATE = app
 
 CONFIG += c++11 console
@@ -25,7 +26,7 @@ SOURCES += \
     entrada.cpp \
     servidor.cpp
 
-LIBS += -pthread -lz
+LIBS += -pthread -lz -lssl -lcrypto
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -7,6 +7,7 @@
 #include "IXCobraConnection.h"
 #include <ixcrypto/IXHMac.h>
 #include <ixwebsocket/IXWebSocket.h>
+#include <ixwebsocket/IXSocketTLSOptions.h>
 
 #include <algorithm>
 #include <stdexcept>
@@ -14,6 +15,7 @@
 #include <cassert>
 #include <cstring>
 #include <iostream>
+#include <sstream>
 
 
 namespace ix
@@ -22,6 +24,7 @@ namespace ix
     PublishTrackerCallback CobraConnection::_publishTrackerCallback = nullptr;
     constexpr size_t CobraConnection::kQueueMaxSize;
     constexpr CobraConnection::MsgId CobraConnection::kInvalidMsgId;
+    constexpr int CobraConnection::kPingIntervalSecs;
 
     CobraConnection::CobraConnection() :
         _webSocket(new WebSocket()),
@@ -226,6 +229,10 @@ namespace ix
                     ss << "HTTP Status: "      << msg->errorInfo.http_status << std::endl;
                     invokeErrorCallback(ss.str(), std::string());
                 }
+                else if (msg->type == ix::WebSocketMessageType::Pong)
+                {
+                    invokeEventCallback(ix::CobraConnection_EventType_Pong);
+                }
         });
     }
 
@@ -243,7 +250,8 @@ namespace ix
                                     const std::string& endpoint,
                                     const std::string& rolename,
                                     const std::string& rolesecret,
-                                    const WebSocketPerMessageDeflateOptions& webSocketPerMessageDeflateOptions)
+                                    const WebSocketPerMessageDeflateOptions& webSocketPerMessageDeflateOptions,
+                                    const SocketTLSOptions& socketTLSOptions)
     {
         _roleName = rolename;
         _roleSecret = rolesecret;
@@ -256,6 +264,16 @@ namespace ix
         std::string url = ss.str();
         _webSocket->setUrl(url);
         _webSocket->setPerMessageDeflateOptions(webSocketPerMessageDeflateOptions);
+        _webSocket->setTLSOptions(socketTLSOptions);
+
+        // Send a websocket ping every N seconds (N = 30) now
+        // This should keep the connection open and prevent some load balancers such as
+        // the Amazon one from shutting it down
+        _webSocket->setPingInterval(kPingIntervalSecs);
+
+        // If we don't receive a pong back, declare loss after 3 * N seconds
+        // (will be 90s now), and close and restart the connection
+        _webSocket->setPingTimeout(3 * kPingIntervalSecs);
     }
 
     //
@@ -496,7 +514,7 @@ namespace ix
         if (_messageQueue.empty()) return true;
 
         auto&& msg = _messageQueue.back();
-        if (!publishMessage(msg))
+        if (!_authenticated || !publishMessage(msg))
         {
             return false;
         }

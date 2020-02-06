@@ -77,6 +77,7 @@ namespace ix
 
     WebSocketTransport::WebSocketTransport()
         : _useMask(true)
+        , _blockingSend(false)
         , _compressedMessage(false)
         , _readyState(ReadyState::CLOSED)
         , _closeCode(WebSocketCloseConstants::kInternalErrorCode)
@@ -143,7 +144,9 @@ namespace ix
 
         if (!UrlParser::parse(url, protocol, host, path, query, port))
         {
-            return WebSocketInitResult(false, 0, std::string("Could not parse URL ") + url);
+            std::stringstream ss;
+            ss << "Could not parse url: '" << url << "'";
+            return WebSocketInitResult(false, 0, ss.str());
         }
 
         std::string errorMsg;
@@ -178,6 +181,7 @@ namespace ix
 
         // Server should not mask the data it sends to the client
         _useMask = false;
+        _blockingSend = true;
 
         _socket = socket;
 
@@ -339,48 +343,16 @@ namespace ix
         // there can be a lot of it for large messages.
         if (pollResult == PollResultType::SendRequest)
         {
-            while (!isSendBufferEmpty() && !_requestInitCancellation)
+            if (!flushSendBuffer())
             {
-                // Wait with a 10ms timeout until the socket is ready to write.
-                // This way we are not busy looping
-                PollResultType result = _socket->isReadyToWrite(10);
-
-                if (result == PollResultType::Error)
-                {
-                    closeSocket();
-                    setReadyState(ReadyState::CLOSED);
-                    break;
-                }
-                else if (result == PollResultType::ReadyForWrite)
-                {
-                    sendOnSocket();
-                }
+                return PollResult::CannotFlushSendBuffer;
             }
         }
         else if (pollResult == PollResultType::ReadyForRead)
         {
-            while (true)
+            if (!receiveFromSocket())
             {
-                ssize_t ret = _socket->recv((char*) &_readbuf[0], _readbuf.size());
-
-                if (ret < 0 && Socket::isWaitNeeded())
-                {
-                    break;
-                }
-                else if (ret <= 0)
-                {
-                    // if there are received data pending to be processed, then delay the abnormal
-                    // closure to after dispatch (other close code/reason could be read from the
-                    // buffer)
-
-                    closeSocket();
-
-                    return PollResult::AbnormalClose;
-                }
-                else
-                {
-                    _rxbuf.insert(_rxbuf.end(), _readbuf.begin(), _readbuf.begin() + ret);
-                }
+                return PollResult::AbnormalClose;
             }
         }
         else if (pollResult == PollResultType::Error)
@@ -748,7 +720,7 @@ namespace ix
 
         // if an abnormal closure was raised in poll, and nothing else triggered a CLOSED state in
         // the received and processed data then close the connection
-        if (pollResult == PollResult::AbnormalClose)
+        if (pollResult != PollResult::Succeeded)
         {
             _rxbuf.clear();
 
@@ -874,10 +846,12 @@ namespace ix
             _txbuf.reserve(wireSize);
         }
 
+        bool success = true;
+
         // Common case for most message. No fragmentation required.
         if (wireSize < kChunkSize)
         {
-            sendFragment(type, true, message_begin, message_end, compress);
+            success = sendFragment(type, true, message_begin, message_end, compress);
         }
         else
         {
@@ -913,7 +887,10 @@ namespace ix
                 }
 
                 // Send message
-                sendFragment(opcodeType, fin, begin, end, compress);
+                if (!sendFragment(opcodeType, fin, begin, end, compress))
+                {
+                    return WebSocketSendInfo(false);
+                }
 
                 if (onProgressCallback && !onProgressCallback((int) i, (int) steps))
                 {
@@ -928,12 +905,18 @@ namespace ix
         if (!isSendBufferEmpty())
         {
             _socket->wakeUpFromPoll(Socket::kSendRequest);
+
+            // FIXME: we should have a timeout when sending large messages: see #131
+            if (_blockingSend && !flushSendBuffer())
+            {
+                success = false;
+            }
         }
 
-        return WebSocketSendInfo(true, compressionError, payloadSize, wireSize);
+        return WebSocketSendInfo(success, compressionError, payloadSize, wireSize);
     }
 
-    void WebSocketTransport::sendFragment(wsheader_type::opcode_type type,
+    bool WebSocketTransport::sendFragment(wsheader_type::opcode_type type,
                                           bool fin,
                                           std::string::const_iterator message_begin,
                                           std::string::const_iterator message_end,
@@ -1018,7 +1001,7 @@ namespace ix
         appendToSendBuffer(header, message_begin, message_end, message_size, masking_key);
 
         // Now actually send this data
-        sendOnSocket();
+        return sendOnSocket();
     }
 
     WebSocketSendInfo WebSocketTransport::sendPing(const std::string& message)
@@ -1051,19 +1034,17 @@ namespace ix
             wsheader_type::TEXT_FRAME, message, _enablePerMessageDeflate, onProgressCallback);
     }
 
-    ssize_t WebSocketTransport::send()
-    {
-        std::lock_guard<std::mutex> lock(_socketMutex);
-        return _socket->send((char*) &_txbuf[0], _txbuf.size());
-    }
-
-    void WebSocketTransport::sendOnSocket()
+    bool WebSocketTransport::sendOnSocket()
     {
         std::lock_guard<std::mutex> lock(_txbufMutex);
 
         while (_txbuf.size())
         {
-            ssize_t ret = send();
+            ssize_t ret = 0;
+            {
+                std::lock_guard<std::mutex> lock(_socketMutex);
+                ret = _socket->send((char*) &_txbuf[0], _txbuf.size());
+            }
 
             if (ret < 0 && Socket::isWaitNeeded())
             {
@@ -1073,13 +1054,43 @@ namespace ix
             {
                 closeSocket();
                 setReadyState(ReadyState::CLOSED);
-                break;
+                return false;
             }
             else
             {
                 _txbuf.erase(_txbuf.begin(), _txbuf.begin() + ret);
             }
         }
+
+        return true;
+    }
+
+    bool WebSocketTransport::receiveFromSocket()
+    {
+        while (true)
+        {
+            ssize_t ret = _socket->recv((char*) &_readbuf[0], _readbuf.size());
+
+            if (ret < 0 && Socket::isWaitNeeded())
+            {
+                break;
+            }
+            else if (ret <= 0)
+            {
+                // if there are received data pending to be processed, then delay the abnormal
+                // closure to after dispatch (other close code/reason could be read from the
+                // buffer)
+
+                closeSocket();
+                return false;
+            }
+            else
+            {
+                _rxbuf.insert(_rxbuf.end(), _readbuf.begin(), _readbuf.begin() + ret);
+            }
+        }
+
+        return true;
     }
 
     void WebSocketTransport::sendCloseFrame(uint16_t code, const std::string& reason)
@@ -1166,6 +1177,32 @@ namespace ix
     {
         std::lock_guard<std::mutex> lock(_txbufMutex);
         return _txbuf.size();
+    }
+
+    bool WebSocketTransport::flushSendBuffer()
+    {
+        while (!isSendBufferEmpty() && !_requestInitCancellation)
+        {
+            // Wait with a 10ms timeout until the socket is ready to write.
+            // This way we are not busy looping
+            PollResultType result = _socket->isReadyToWrite(10);
+
+            if (result == PollResultType::Error)
+            {
+                closeSocket();
+                setReadyState(ReadyState::CLOSED);
+                return false;
+            }
+            else if (result == PollResultType::ReadyForWrite)
+            {
+                if (!sendOnSocket())
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
 } // namespace ix

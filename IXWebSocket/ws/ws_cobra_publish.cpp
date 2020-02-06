@@ -7,7 +7,6 @@
 #include <atomic>
 #include <chrono>
 #include <fstream>
-#include <iostream>
 #include <ixcobra/IXCobraMetricsPublisher.h>
 #include <jsoncpp/json/json.h>
 #include <mutex>
@@ -22,7 +21,8 @@ namespace ix
                               const std::string& rolename,
                               const std::string& rolesecret,
                               const std::string& channel,
-                              const std::string& path)
+                              const std::string& path,
+                              const ix::SocketTLSOptions& tlsOptions)
     {
         std::ifstream f(path);
         std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -36,9 +36,12 @@ namespace ix
         }
 
         ix::CobraConnection conn;
-        conn.configure(
-            appkey, endpoint, rolename, rolesecret, ix::WebSocketPerMessageDeflateOptions(true));
-        conn.connect();
+        conn.configure(appkey,
+                       endpoint,
+                       rolename,
+                       rolesecret,
+                       ix::WebSocketPerMessageDeflateOptions(true),
+                       tlsOptions);
 
         // Display incoming messages
         std::atomic<bool> authenticated(false);
@@ -87,7 +90,13 @@ namespace ix
                 spdlog::info("Published message id {} acked", msgId);
                 messageAcked = true;
             }
+            else if (eventType == ix::CobraConnection_EventType_Pong)
+            {
+                spdlog::info("Received websocket pong");
+            }
         });
+
+        conn.connect();
 
         while (!authenticated)
             ;

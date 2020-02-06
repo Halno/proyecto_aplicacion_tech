@@ -44,16 +44,16 @@ JSON login(JSON receivedObject)
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["Error"] = 0;
 
-    std::string nombre=receivedObject["nombre"];
+    std::string nombre=receivedObject["usuario"];
     QString nombreUsuario = QString::fromUtf8(nombre.c_str());
 
-    std::string password=receivedObject["password"];
-    QString passwordUsuario = QString::fromUtf8(nombre.c_str());
+    std::string password=receivedObject["contrasenya_Usuario"];
+    QString passwordUsuario = QString::fromUtf8(password.c_str());
 
     Usuario user(nombreUsuario, passwordUsuario);
 
 
-    if (!user.login())
+    if (!user.comprobarContrasenya())
     {
         respuesta["Error"]= 1;
         respuesta["mensajeError"]= "Nombre de usuario y/o contraseña incorrecto(s).";
@@ -66,8 +66,7 @@ JSON login(JSON receivedObject)
         }
         else
         {
-            user.insert();
-
+            user.loginAndLogout();
             respuesta["mensaje"] = "Has iniciado sesión con éxito";
             logeado=true;
         }
@@ -88,11 +87,17 @@ JSON logout(JSON receivedObject)
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["Error"] = 0;
 
+    std::string nombre=receivedObject["usuario"];
+    QString nombreUsuario = QString::fromUtf8(nombre.c_str());
+
+    std::string password=receivedObject["contrasenya_Usuario"];
+    QString passwordUsuario = QString::fromUtf8(password.c_str());
+
+    Usuario user(nombreUsuario, passwordUsuario);
 
         if (logeado)
         {
-            Usuario user;
-            user.logout();
+            user.loginAndLogout();
             respuesta["mensaje"]= "Has salido.";
             logeado=false;
         }
@@ -116,23 +121,22 @@ JSON registro(JSON receivedObject)
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["Error"] = 0;
 
-    std::string nombre=receivedObject["nombre"];
+    std::string nombre=receivedObject["usuario"];
     QString nombreUsuario = QString::fromUtf8(nombre.c_str());
 
+    std::string password=receivedObject["contrasenya_Usuario"];
+    QString passwordUsuario = QString::fromUtf8(password.c_str());
 
-    if (Usuario::find(nombreUsuario))
+    Usuario user(nombreUsuario, passwordUsuario);
+
+    if (user.registro(nombreUsuario))
     {
         respuesta["Error"]= 1;
         respuesta["mensajeError"]= "Nombre de usuario en uso. Elige otro.";
     }
     else
-    {   
-        std::string password=receivedObject["password"];
-        QString passwordUsuario = QString::fromUtf8(nombre.c_str());
-
-        Usuario user(nombreUsuario, passwordUsuario);
+    {        
         user.insert();
-
         respuesta["mensaje"] = "Has completado el registro con éxito";
     }
 
@@ -170,6 +174,20 @@ JSON consultarSeccion(JSON receivedObject)
 int Servidor::iniciarServidor()
 {
     ix::WebSocketServer server(9990, "0.0.0.0");
+
+    ix::SocketTLSOptions tlsOptions;
+
+    tlsOptions.tls = true;
+    tlsOptions.certFile = "./cert/localhost.crt";
+    tlsOptions.keyFile = "./cert/localhost.key";
+    tlsOptions.caFile = "NONE";
+
+    if (tlsOptions.isValid())
+    {
+        std::cerr << "SSL valid" << std::endl;
+    }
+
+    server.setTLSOptions(tlsOptions);
 
     server.setOnConnectionCallback(
         [&server](std::shared_ptr<ix::WebSocket> webSocket,

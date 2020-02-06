@@ -1,4 +1,4 @@
-FROM alpine as build
+FROM alpine:3.11 as build
 
 RUN apk add --no-cache gcc g++ musl-dev linux-headers cmake openssl-dev 
 RUN apk add --no-cache make
@@ -15,15 +15,21 @@ WORKDIR /opt
 
 USER app
 RUN [ "make", "ws_install" ]
+RUN [ "rm", "-rf", "build" ]
 
-FROM alpine as runtime
+FROM alpine:3.11 as runtime
 
 RUN apk add --no-cache libstdc++
+RUN apk add --no-cache strace
+RUN apk add --no-cache gdb
 
 RUN addgroup -S app && adduser -S -G app app 
 COPY --chown=app:app --from=build /usr/local/bin/ws /usr/local/bin/ws
 RUN chmod +x /usr/local/bin/ws
 RUN ldd /usr/local/bin/ws
+
+# Copy source code for gcc
+COPY --chown=app:app --from=build /opt /opt
 
 # Now run in usermode
 USER app
@@ -31,4 +37,3 @@ WORKDIR /home/app
 
 ENTRYPOINT ["ws"]
 EXPOSE 8008
-CMD ["--help"]

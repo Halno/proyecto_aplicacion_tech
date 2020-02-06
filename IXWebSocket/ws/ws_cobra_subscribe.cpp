@@ -6,7 +6,6 @@
 
 #include <atomic>
 #include <chrono>
-#include <iostream>
 #include <ixcobra/IXCobraConnection.h>
 #include <spdlog/spdlog.h>
 #include <sstream>
@@ -20,11 +19,16 @@ namespace ix
                                 const std::string& rolesecret,
                                 const std::string& channel,
                                 const std::string& filter,
-                                bool quiet)
+                                bool quiet,
+                                const ix::SocketTLSOptions& tlsOptions)
     {
         ix::CobraConnection conn;
-        conn.configure(
-            appkey, endpoint, rolename, rolesecret, ix::WebSocketPerMessageDeflateOptions(true));
+        conn.configure(appkey,
+                       endpoint,
+                       rolename,
+                       rolesecret,
+                       ix::WebSocketPerMessageDeflateOptions(true),
+                       tlsOptions);
         conn.connect();
 
         Json::FastWriter jsonWriter;
@@ -36,8 +40,7 @@ namespace ix
         auto timer = [&msgPerSeconds, &msgCount] {
             while (true)
             {
-                std::cout << "#messages " << msgCount << " "
-                          << "msg/s " << msgPerSeconds << std::endl;
+                spdlog::info("#messages {} msg/s {}", msgCount, msgPerSeconds);
 
                 msgPerSeconds = 0;
                 auto duration = std::chrono::seconds(1);
@@ -72,7 +75,7 @@ namespace ix
                         [&jsonWriter, &quiet, &msgPerSeconds, &msgCount](const Json::Value& msg) {
                             if (!quiet)
                             {
-                                std::cerr << jsonWriter.write(msg) << std::endl;
+                                spdlog::info(jsonWriter.write(msg));
                             }
 
                             msgPerSeconds++;
@@ -95,11 +98,15 @@ namespace ix
                 {
                     spdlog::error("Published message hacked: {}", msgId);
                 }
+                else if (eventType == ix::CobraConnection_EventType_Pong)
+                {
+                    spdlog::info("Received websocket pong");
+                }
             });
 
         while (true)
         {
-            std::chrono::duration<double, std::milli> duration(10);
+            auto duration = std::chrono::seconds(1);
             std::this_thread::sleep_for(duration);
         }
 

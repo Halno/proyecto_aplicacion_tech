@@ -25,14 +25,22 @@ include_directories(ws ../third_party/statsd-client-cpp/src)
 include_directories(ws ../third_party/spdlog/include)
 include_directories(ws ../third_party/cpp-linenoise)
 
+add_definitions(-DSPDLOG_COMPILED_LIB=1)
+
 if (UNIX)
   set( STATSD_CLIENT_SOURCES ../third_party/statsd-client-cpp/src/statsd_client.cpp)
 endif()
 
+find_package(JsonCpp)
+if (NOT JSONCPP_FOUND)
+  include_directories(../third_party/jsoncpp)
+  set(JSONCPP_SOURCES ../third_party/jsoncpp/jsoncpp.cpp)
+endif()
+
 add_executable(ws 
   ../third_party/msgpack11/msgpack11.cpp
-  ../third_party/jsoncpp/jsoncpp.cpp
   ${STATSD_CLIENT_SOURCES}
+  ${JSONCPP_SOURCES}
 
   ws_http_client.cpp
   ws_ping_pong.cpp
@@ -57,6 +65,7 @@ add_executable(ws
   ws_autobahn.cpp
   ws_proxy_server.cpp
   ws_sentry_minidump_upload.cpp
+  ws_dns_lookup.cpp
   ws.cpp)
 
 target_link_libraries(ws ixsnake)
@@ -66,12 +75,19 @@ target_link_libraries(ws ixcrypto)
 target_link_libraries(ws ixcore)
 target_link_libraries(ws ixsentry)
 
+target_link_libraries(ws spdlog)
+
 if(NOT APPLE AND NOT USE_MBED_TLS)
   find_package(OpenSSL REQUIRED)
   add_definitions(${OPENSSL_DEFINITIONS})
   message(STATUS "OpenSSL: " ${OPENSSL_VERSION})
   include_directories(${OPENSSL_INCLUDE_DIR})
   target_link_libraries(ws ${OPENSSL_LIBRARIES})
+endif()
+
+if (JSONCPP_FOUND)
+  target_include_directories(ws PUBLIC ${JSONCPP_INCLUDE_DIRS})
+  target_link_libraries(ws ${JSONCPP_LIBRARIES})
 endif()
 
 install(TARGETS ws RUNTIME DESTINATION bin)

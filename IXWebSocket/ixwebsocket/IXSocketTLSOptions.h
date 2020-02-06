@@ -43,8 +43,10 @@ namespace ix
 
         const std::string& getErrorMsg() const;
 
+        std::string getDescription() const;
+
     private:
         mutable std::string _errMsg;
-        mutable bool _validated;
+        mutable bool _validated = false;
     };
 } // namespace ix

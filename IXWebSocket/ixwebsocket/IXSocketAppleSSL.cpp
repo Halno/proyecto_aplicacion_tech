@@ -24,9 +24,47 @@
 
 #include <Security/SecureTransport.h>
 
-namespace
+namespace ix
 {
-    OSStatus read_from_socket(SSLConnectionRef connection, void* data, size_t* len)
+    SocketAppleSSL::SocketAppleSSL(const SocketTLSOptions& tlsOptions, int fd)
+        : Socket(fd)
+        , _sslContext(nullptr)
+        , _tlsOptions(tlsOptions)
+    {
+        ;
+    }
+
+    SocketAppleSSL::~SocketAppleSSL()
+    {
+        SocketAppleSSL::close();
+    }
+
+    std::string SocketAppleSSL::getSSLErrorDescription(OSStatus status)
+    {
+        std::string errMsg("Unknown SSL error.");
+
+        CFErrorRef error = CFErrorCreate(kCFAllocatorDefault, kCFErrorDomainOSStatus, status, NULL);
+        if (error)
+        {
+            CFStringRef message = CFErrorCopyDescription(error);
+            if (message)
+            {
+                char localBuffer[128];
+                Boolean success;
+                success = CFStringGetCString(message, localBuffer, 128, kCFStringEncodingUTF8);
+                if (success)
+                {
+                    errMsg = localBuffer;
+                }
+                CFRelease(message);
+            }
+            CFRelease(error);
+        }
+
+        return errMsg;
+    }
+
+    OSStatus SocketAppleSSL::readFromSocket(SSLConnectionRef connection, void* data, size_t* len)
     {
         int fd = (int) (long) connection;
         if (fd < 0) return errSSLInternal;
@@ -42,11 +80,15 @@ namespace
         {
             *len = (size_t) status;
             if (requested_sz > *len)
+            {
                 return errSSLWouldBlock;
+            }
             else
+            {
                 return noErr;
+            }
         }
-        else if (0 == status)
+        else if (status == 0)
         {
             *len = 0;
             return errSSLClosedGraceful;
@@ -58,7 +100,8 @@ namespace
             {
                 case ENOENT: return errSSLClosedGraceful;
 
-                case EAGAIN: return errSSLWouldBlock;
+                case EAGAIN: return errSSLWouldBlock; // EWOULDBLOCK is a define for EAGAIN on osx
+                case EINPROGRESS: return errSSLWouldBlock;
 
                 case ECONNRESET: return errSSLClosedAbort;
 
@@ -67,7 +110,9 @@ namespace
         }
     }
 
-    OSStatus write_to_socket(SSLConnectionRef connection, const void* data, size_t* len)
+    OSStatus SocketAppleSSL::writeToSocket(SSLConnectionRef connection,
+                                           const void* data,
+                                           size_t* len)
     {
         int fd = (int) (long) connection;
         if (fd < 0) return errSSLInternal;
@@ -82,11 +127,15 @@ namespace
         {
             *len = (size_t) status;
             if (to_write_sz > *len)
+            {
                 return errSSLWouldBlock;
+            }
             else
+            {
                 return noErr;
+            }
         }
-        else if (0 == status)
+        else if (status == 0)
         {
             *len = 0;
             return errSSLClosedGraceful;
@@ -94,58 +143,25 @@ namespace
         else
         {
             *len = 0;
-            if (EAGAIN == errno)
+            switch (errno)
             {
-                return errSSLWouldBlock;
-            }
-            else
-            {
-                return errSecIO;
+                case ENOENT: return errSSLClosedGraceful;
+
+                case EAGAIN: return errSSLWouldBlock; // EWOULDBLOCK is a define for EAGAIN on osx
+                case EINPROGRESS: return errSSLWouldBlock;
+
+                case ECONNRESET: return errSSLClosedAbort;
+
+                default: return errSecIO;
             }
         }
     }
 
-    std::string getSSLErrorDescription(OSStatus status)
+
+    bool SocketAppleSSL::accept(std::string& errMsg)
     {
-        std::string errMsg("Unknown SSL error.");
-
-        CFErrorRef error = CFErrorCreate(kCFAllocatorDefault, kCFErrorDomainOSStatus, status, NULL);
-        if (error)
-        {
-            CFStringRef message = CFErrorCopyDescription(error);
-            if (message)
-            {
-                char localBuffer[128];
-                Boolean success;
-                success =
-                    CFStringGetCString(message, localBuffer, 128, CFStringGetSystemEncoding());
-                if (success)
-                {
-                    errMsg = localBuffer;
-                }
-                CFRelease(message);
-            }
-            CFRelease(error);
-        }
-
-        return errMsg;
-    }
-
-} // anonymous namespace
-
-namespace ix
-{
-    SocketAppleSSL::SocketAppleSSL(const SocketTLSOptions& tlsOptions, int fd)
-        : Socket(fd)
-        , _sslContext(nullptr)
-        , _tlsOptions(tlsOptions)
-    {
-        ;
-    }
-
-    SocketAppleSSL::~SocketAppleSSL()
-    {
-        SocketAppleSSL::close();
+        errMsg = "TLS not supported yet in server mode with apple ssl backend";
+        return false;
     }
 
     // No wait support
@@ -163,7 +179,8 @@ namespace ix
 
             _sslContext = SSLCreateContext(kCFAllocatorDefault, kSSLClientSide, kSSLStreamType);
 
-            SSLSetIOFuncs(_sslContext, read_from_socket, write_to_socket);
+            SSLSetIOFuncs(
+                _sslContext, SocketAppleSSL::readFromSocket, SocketAppleSSL::writeToSocket);
             SSLSetConnection(_sslContext, (SSLConnectionRef)(long) _sockfd);
             SSLSetProtocolVersionMin(_sslContext, kTLSProtocol12);
             SSLSetPeerDomainName(_sslContext, host.c_str(), host.size());
@@ -176,7 +193,7 @@ namespace ix
                 do
                 {
                     status = SSLHandshake(_sslContext);
-                } while (errSSLWouldBlock == status || errSSLServerAuthCompleted == status);
+                } while (status == errSSLWouldBlock || status == errSSLServerAuthCompleted);
 
                 if (status == errSSLServerAuthCompleted)
                 {
@@ -184,7 +201,7 @@ namespace ix
                     do
                     {
                         status = SSLHandshake(_sslContext);
-                    } while (errSSLWouldBlock == status || errSSLServerAuthCompleted == status);
+                    } while (status == errSSLWouldBlock || status == errSSLServerAuthCompleted);
                 }
             }
             else
@@ -192,11 +209,11 @@ namespace ix
                 do
                 {
                     status = SSLHandshake(_sslContext);
-                } while (errSSLWouldBlock == status || errSSLServerAuthCompleted == status);
+                } while (status == errSSLWouldBlock || status == errSSLServerAuthCompleted);
             }
         }
 
-        if (noErr != status)
+        if (status != noErr)
         {
             errMsg = getSSLErrorDescription(status);
             close();
@@ -221,32 +238,38 @@ namespace ix
 
     ssize_t SocketAppleSSL::send(char* buf, size_t nbyte)
     {
-        ssize_t ret = 0;
-        OSStatus status;
-        do
+        OSStatus status = errSSLWouldBlock;
+        while (status == errSSLWouldBlock)
         {
             size_t processed = 0;
             std::lock_guard<std::mutex> lock(_mutex);
             status = SSLWrite(_sslContext, buf, nbyte, &processed);
-            ret += processed;
-            buf += processed;
-            nbyte -= processed;
-        } while (nbyte > 0 && errSSLWouldBlock == status);
 
-        if (ret == 0 && errSSLClosedAbort != status) ret = -1;
-        return ret;
-    }
+            if (processed > 0) return (ssize_t) processed;
 
-    ssize_t SocketAppleSSL::send(const std::string& buffer)
-    {
-        return send((char*) &buffer[0], buffer.size());
+            // The connection was reset, inform the caller that this
+            // Socket should close
+            if (status == errSSLClosedGraceful || status == errSSLClosedNoNotify ||
+                status == errSSLClosedAbort)
+            {
+                errno = ECONNRESET;
+                return -1;
+            }
+
+            if (status == errSSLWouldBlock)
+            {
+                errno = EWOULDBLOCK;
+                return -1;
+            }
+        }
+        return -1;
     }
 
     // No wait support
     ssize_t SocketAppleSSL::recv(void* buf, size_t nbyte)
     {
         OSStatus status = errSSLWouldBlock;
-        while (errSSLWouldBlock == status)
+        while (status == errSSLWouldBlock)
         {
             size_t processed = 0;
             std::lock_guard<std::mutex> lock(_mutex);

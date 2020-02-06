@@ -29,7 +29,8 @@ namespace ix
                         const std::string& host = SocketServer::kDefaultHost,
                         int backlog = SocketServer::kDefaultTcpBacklog,
                         size_t maxConnections = SocketServer::kDefaultMaxConnections,
-                        int handshakeTimeoutSecs = WebSocketServer::kDefaultHandShakeTimeoutSecs);
+                        int handshakeTimeoutSecs = WebSocketServer::kDefaultHandShakeTimeoutSecs,
+                        int addressFamily = SocketServer::kDefaultAddressFamily);
         virtual ~WebSocketServer();
         virtual void stop() final;
 
@@ -41,6 +42,8 @@ namespace ix
         // Get all the connected clients
         std::set<std::shared_ptr<WebSocket>> getClients();
 
+        const static int kDefaultHandShakeTimeoutSecs;
+
     private:
         // Member variables
         int _handshakeTimeoutSecs;
@@ -51,7 +54,6 @@ namespace ix
         std::mutex _clientsMutex;
         std::set<std::shared_ptr<WebSocket>> _clients;
 
-        const static int kDefaultHandShakeTimeoutSecs;
         const static bool kDefaultEnablePong;
 
         // Methods

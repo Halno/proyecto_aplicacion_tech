@@ -6,6 +6,7 @@
 
 #include "IXCobraMetricsThreadedPublisher.h"
 #include <ixwebsocket/IXSetThreadName.h>
+#include <ixwebsocket/IXSocketTLSOptions.h>
 #include <ixcore/utils/IXCoreLogger.h>
 
 #include <algorithm>
@@ -13,6 +14,7 @@
 #include <cmath>
 #include <cassert>
 #include <iostream>
+#include <sstream>
 
 
 namespace ix
@@ -63,6 +65,10 @@ namespace ix
                 {
                     ss << "Published message " << msgId << " acked";
                 }
+                else if (eventType == ix::CobraConnection_EventType_Pong)
+                {
+                    ss << "Received websocket pong";
+                }
 
                 ix::IXCoreLogger::Log(ss.str().c_str());
         });
@@ -91,14 +97,17 @@ namespace ix
                                                   const std::string& channel,
                                                   const std::string& rolename,
                                                   const std::string& rolesecret,
-                                                  bool enablePerMessageDeflate)
+                                                  bool enablePerMessageDeflate,
+                                                  const SocketTLSOptions& socketTLSOptions)
     {
         _channel = channel;
+
+        ix::IXCoreLogger::Log(socketTLSOptions.getDescription().c_str());
 
         ix::WebSocketPerMessageDeflateOptions webSocketPerMessageDeflateOptions(enablePerMessageDeflate);
         _cobra_connection.configure(appkey, endpoint,
                                     rolename, rolesecret,
-                                    webSocketPerMessageDeflateOptions);
+                                    webSocketPerMessageDeflateOptions, socketTLSOptions);
     }
 
     void CobraMetricsThreadedPublisher::pushMessage(MessageKind messageKind)

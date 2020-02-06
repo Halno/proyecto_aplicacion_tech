@@ -61,7 +61,8 @@ namespace ix
         enum class PollResult
         {
             Succeeded,
-            AbnormalClose
+            AbnormalClose,
+            CannotFlushSendBuffer
         };
 
         using OnMessageCallback =
@@ -98,7 +99,6 @@ namespace ix
                    bool remote = false);
 
         void closeSocket();
-        ssize_t send();
 
         ReadyState getReadyState() const;
         void setReadyState(ReadyState readyState);
@@ -134,6 +134,10 @@ namespace ix
         // Tells whether we should mask the data we send.
         // client should mask but server should not
         std::atomic<bool> _useMask;
+
+        // Tells whether we should flush the send buffer before
+        // saying that a send is complete. This is the mode for server code.
+        std::atomic<bool> _blockingSend;
 
         // Buffer for reading from our socket. That buffer is never resized.
         std::vector<uint8_t> _readbuf;
@@ -238,13 +242,16 @@ namespace ix
                                                size_t closeWireSize,
                                                bool remote);
 
-        void sendOnSocket();
+        bool flushSendBuffer();
+        bool sendOnSocket();
+        bool receiveFromSocket();
+
         WebSocketSendInfo sendData(wsheader_type::opcode_type type,
                                    const std::string& message,
                                    bool compress,
                                    const OnProgressCallback& onProgressCallback = nullptr);
 
-        void sendFragment(wsheader_type::opcode_type type,
+        bool sendFragment(wsheader_type::opcode_type type,
                           bool fin,
                           std::string::const_iterator begin,
                           std::string::const_iterator end,

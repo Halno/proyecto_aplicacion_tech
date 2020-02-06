@@ -38,9 +38,11 @@ namespace ix
         mbedtls_ctr_drbg_init(&_ctr_drbg);
         mbedtls_entropy_init(&_entropy);
         mbedtls_x509_crt_init(&_cacert);
+        mbedtls_x509_crt_init(&_cert);
+        mbedtls_pk_init(&_pkey);
     }
 
-    bool SocketMbedTLS::init(const std::string& host, std::string& errMsg)
+    bool SocketMbedTLS::init(const std::string& host, bool isClient, std::string& errMsg)
     {
         initMBedTLS();
         std::lock_guard<std::mutex> lock(_mutex);
@@ -58,7 +60,7 @@ namespace ix
         }
 
         if (mbedtls_ssl_config_defaults(&_conf,
-                                        MBEDTLS_SSL_IS_CLIENT,
+                                        (isClient) ? MBEDTLS_SSL_IS_CLIENT : MBEDTLS_SSL_IS_SERVER,
                                         MBEDTLS_SSL_TRANSPORT_STREAM,
                                         MBEDTLS_SSL_PRESET_DEFAULT) != 0)
         {
@@ -68,13 +70,32 @@ namespace ix
 
         mbedtls_ssl_conf_rng(&_conf, mbedtls_ctr_drbg_random, &_ctr_drbg);
 
+        if (_tlsOptions.hasCertAndKey())
+        {
+            if (mbedtls_x509_crt_parse_file(&_cert, _tlsOptions.certFile.c_str()) < 0)
+            {
+                errMsg = "Cannot parse cert file '" + _tlsOptions.certFile + "'";
+                return false;
+            }
+            if (mbedtls_pk_parse_keyfile(&_pkey, _tlsOptions.keyFile.c_str(), "") < 0)
+            {
+                errMsg = "Cannot parse key file '" + _tlsOptions.keyFile + "'";
+                return false;
+            }
+            if (mbedtls_ssl_conf_own_cert(&_conf, &_cert, &_pkey) < 0)
+            {
+                errMsg = "Problem configuring cert '" + _tlsOptions.certFile + "'";
+                return false;
+            }
+        }
+
         if (_tlsOptions.isPeerVerifyDisabled())
         {
             mbedtls_ssl_conf_authmode(&_conf, MBEDTLS_SSL_VERIFY_NONE);
         }
         else
         {
-            mbedtls_ssl_conf_ca_chain(&_conf, &_cacert, NULL);
+            mbedtls_ssl_conf_authmode(&_conf, MBEDTLS_SSL_VERIFY_REQUIRED);
 
             // FIXME: should we call mbedtls_ssl_conf_verify ?
 
@@ -87,7 +108,8 @@ namespace ix
                 errMsg = "Cannot parse CA file '" + _tlsOptions.caFile + "'";
                 return false;
             }
-            mbedtls_ssl_conf_authmode(&_conf, MBEDTLS_SSL_VERIFY_REQUIRED);
+
+            mbedtls_ssl_conf_ca_chain(&_conf, &_cacert, NULL);
         }
 
         if (mbedtls_ssl_setup(&_ssl, &_conf) != 0)
@@ -96,9 +118,53 @@ namespace ix
             return false;
         }
 
-        if (mbedtls_ssl_set_hostname(&_ssl, host.c_str()) != 0)
+        if (!host.empty() && mbedtls_ssl_set_hostname(&_ssl, host.c_str()) != 0)
         {
             errMsg = "SNI setup failed";
+            return false;
+        }
+
+        return true;
+    }
+
+    bool SocketMbedTLS::accept(std::string& errMsg)
+    {
+        bool isClient = false;
+        bool initialized = init(std::string(), isClient, errMsg);
+        if (!initialized)
+        {
+            close();
+            return false;
+        }
+
+        mbedtls_ssl_set_bio(&_ssl, &_sockfd, mbedtls_net_send, mbedtls_net_recv, NULL);
+
+        int res;
+        do
+        {
+            std::lock_guard<std::mutex> lock(_mutex);
+            res = mbedtls_ssl_handshake(&_ssl);
+        } while (res == MBEDTLS_ERR_SSL_WANT_READ || res == MBEDTLS_ERR_SSL_WANT_WRITE);
+
+        if (res != 0)
+        {
+            char buf[256];
+            mbedtls_strerror(res, buf, sizeof(buf));
+
+            errMsg = "error in handshake : ";
+            errMsg += buf;
+
+            if (res == MBEDTLS_ERR_X509_CERT_VERIFY_FAILED)
+            {
+                char verifyBuf[512];
+                uint32_t flags = mbedtls_ssl_get_verify_result(&_ssl);
+
+                mbedtls_x509_crt_verify_info(verifyBuf, sizeof(verifyBuf), "  ! ", flags);
+                errMsg += " : ";
+                errMsg += verifyBuf;
+            }
+
+            close();
             return false;
         }
 
@@ -116,7 +182,8 @@ namespace ix
             if (_sockfd == -1) return false;
         }
 
-        bool initialized = init(host, errMsg);
+        bool isClient = true;
+        bool initialized = init(host, isClient, errMsg);
         if (!initialized)
         {
             close();
@@ -156,41 +223,30 @@ namespace ix
         mbedtls_ctr_drbg_free(&_ctr_drbg);
         mbedtls_entropy_free(&_entropy);
         mbedtls_x509_crt_free(&_cacert);
+        mbedtls_x509_crt_free(&_cert);
 
         Socket::close();
     }
 
     ssize_t SocketMbedTLS::send(char* buf, size_t nbyte)
     {
-        ssize_t sent = 0;
+        std::lock_guard<std::mutex> lock(_mutex);
 
-        while (nbyte > 0)
+        ssize_t res = mbedtls_ssl_write(&_ssl, (unsigned char*) buf, nbyte);
+
+        if (res > 0)
         {
-            std::lock_guard<std::mutex> lock(_mutex);
-
-            ssize_t res = mbedtls_ssl_write(&_ssl, (unsigned char*) buf, nbyte);
-
-            if (res > 0)
-            {
-                nbyte -= res;
-                sent += res;
-            }
-            else if (res == MBEDTLS_ERR_SSL_WANT_READ || res == MBEDTLS_ERR_SSL_WANT_WRITE)
-            {
-                errno = EWOULDBLOCK;
-                return -1;
-            }
-            else
-            {
-                return -1;
-            }
+            return res;
         }
-        return sent;
-    }
-
-    ssize_t SocketMbedTLS::send(const std::string& buffer)
-    {
-        return send((char*) &buffer[0], buffer.size());
+        else if (res == MBEDTLS_ERR_SSL_WANT_READ || res == MBEDTLS_ERR_SSL_WANT_WRITE)
+        {
+            errno = EWOULDBLOCK;
+            return -1;
+        }
+        else
+        {
+            return -1;
+        }
     }
 
     ssize_t SocketMbedTLS::recv(void* buf, size_t nbyte)

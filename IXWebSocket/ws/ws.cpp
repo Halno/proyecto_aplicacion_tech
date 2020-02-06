@@ -11,7 +11,6 @@
 
 #include <cli11/CLI11.hpp>
 #include <fstream>
-#include <iostream>
 #include <ixcore/utils/IXCoreLogger.h>
 #include <ixwebsocket/IXNetSystem.h>
 #include <ixwebsocket/IXSocket.h>
@@ -22,6 +21,9 @@
 
 #ifndef _WIN32
 #include <signal.h>
+#else
+#include <process.h>
+#define getpid _getpid
 #endif
 
 
@@ -39,12 +41,13 @@ int main(int argc, char** argv)
     // Display command.
     if (getenv("DEBUG"))
     {
-        std::cout << "Command: ";
+        std::stringstream ss;
+        ss << "Command: ";
         for (int i = 0; i < argc; ++i)
         {
-            std::cout << argv[i] << " ";
+            ss << argv[i] << " ";
         }
-        std::cout << std::endl;
+        spdlog::info(ss.str());
     }
 
     CLI::App app {"ws is a websocket tool"};
@@ -91,10 +94,12 @@ int main(int argc, char** argv)
     bool disableAutomaticReconnection = false;
     bool disablePerMessageDeflate = false;
     bool greetings = false;
+    bool ipv6 = false;
     bool binaryMode = false;
     bool redirect = false;
     bool version = false;
     bool verifyNone = false;
+    bool disablePong = false;
     int port = 8008;
     int redisPort = 6379;
     int statsdPort = 8125;
@@ -105,6 +110,7 @@ int main(int argc, char** argv)
     int count = 1;
     int jobs = 4;
     uint32_t maxWaitBetweenReconnectionRetries;
+    size_t maxQueueSize = 100;
 
     auto addTLSOptions = [&tlsOptions, &verifyNone](CLI::App* app) {
         app->add_option(
@@ -121,7 +127,7 @@ int main(int argc, char** argv)
         app->add_flag("--verify_none", verifyNone, "Disable peer cert verification");
     };
 
-    app.add_flag("--version", version, "Connection url");
+    app.add_flag("--version", version, "Print ws version");
 
     CLI::App* sendApp = app.add_subcommand("send", "Send a file");
     sendApp->add_option("url", url, "Connection url")->required();
@@ -129,6 +135,7 @@ int main(int argc, char** argv)
         ->required()
         ->check(CLI::ExistingPath);
     sendApp->add_option("--pidfile", pidfile, "Pid file");
+    sendApp->add_flag("-x", disablePerMessageDeflate, "Disable per message deflate");
     addTLSOptions(sendApp);
 
     CLI::App* receiveApp = app.add_subcommand("receive", "Receive a file");
@@ -166,6 +173,7 @@ int main(int argc, char** argv)
     echoServerApp->add_option("--port", port, "Port");
     echoServerApp->add_option("--host", hostname, "Hostname");
     echoServerApp->add_flag("-g", greetings, "Verbose");
+    echoServerApp->add_flag("-6", ipv6, "IpV6");
     addTLSOptions(echoServerApp);
 
     CLI::App* broadcastServerApp = app.add_subcommand("broadcast_server", "Broadcasting server");
@@ -214,21 +222,23 @@ int main(int argc, char** argv)
     cobraSubscribeApp->add_option("--endpoint", endpoint, "Endpoint")->required();
     cobraSubscribeApp->add_option("--rolename", rolename, "Role name")->required();
     cobraSubscribeApp->add_option("--rolesecret", rolesecret, "Role secret")->required();
-    cobraSubscribeApp->add_option("channel", channel, "Channel")->required();
+    cobraSubscribeApp->add_option("--channel", channel, "Channel")->required();
     cobraSubscribeApp->add_option("--pidfile", pidfile, "Pid file");
     cobraSubscribeApp->add_option("--filter", filter, "Stream SQL Filter");
     cobraSubscribeApp->add_flag("-q", quiet, "Quiet / only display stats");
+    addTLSOptions(cobraSubscribeApp);
 
     CLI::App* cobraPublish = app.add_subcommand("cobra_publish", "Cobra publisher");
     cobraPublish->add_option("--appkey", appkey, "Appkey")->required();
     cobraPublish->add_option("--endpoint", endpoint, "Endpoint")->required();
     cobraPublish->add_option("--rolename", rolename, "Role name")->required();
     cobraPublish->add_option("--rolesecret", rolesecret, "Role secret")->required();
-    cobraPublish->add_option("channel", channel, "Channel")->required();
+    cobraPublish->add_option("--channel", channel, "Channel")->required();
     cobraPublish->add_option("--pidfile", pidfile, "Pid file");
     cobraPublish->add_option("path", path, "Path to the file to send")
         ->required()
         ->check(CLI::ExistingPath);
+    addTLSOptions(cobraPublish);
 
     CLI::App* cobraMetricsPublish =
         app.add_subcommand("cobra_metrics_publish", "Cobra metrics publisher");
@@ -236,12 +246,13 @@ int main(int argc, char** argv)
     cobraMetricsPublish->add_option("--endpoint", endpoint, "Endpoint");
     cobraMetricsPublish->add_option("--rolename", rolename, "Role name");
     cobraMetricsPublish->add_option("--rolesecret", rolesecret, "Role secret");
-    cobraMetricsPublish->add_option("channel", channel, "Channel")->required();
+    cobraMetricsPublish->add_option("--channel", channel, "Channel")->required();
     cobraMetricsPublish->add_option("--pidfile", pidfile, "Pid file");
     cobraMetricsPublish->add_option("path", path, "Path to the file to send")
         ->required()
         ->check(CLI::ExistingPath);
     cobraMetricsPublish->add_flag("--stress", stress, "Stress mode");
+    addTLSOptions(cobraMetricsPublish);
 
     CLI::App* cobra2statsd = app.add_subcommand("cobra_to_statsd", "Cobra metrics to statsd");
     cobra2statsd->add_option("--appkey", appkey, "Appkey");
@@ -256,6 +267,7 @@ int main(int argc, char** argv)
     cobra2statsd->add_flag("-v", verbose, "Verbose");
     cobra2statsd->add_option("--pidfile", pidfile, "Pid file");
     cobra2statsd->add_option("--filter", filter, "Stream SQL Filter");
+    addTLSOptions(cobra2statsd);
 
     CLI::App* cobra2sentry = app.add_subcommand("cobra_to_sentry", "Cobra metrics to sentry");
     cobra2sentry->add_option("--appkey", appkey, "Appkey")->required();
@@ -264,11 +276,15 @@ int main(int argc, char** argv)
     cobra2sentry->add_option("--rolesecret", rolesecret, "Role secret")->required();
     cobra2sentry->add_option("--dsn", dsn, "Sentry DSN");
     cobra2sentry->add_option("--jobs", jobs, "Number of thread sending events to Sentry");
+    cobra2sentry->add_option("--queue_size",
+                             maxQueueSize,
+                             "Size of the queue to hold messages before they are sent to Sentry");
     cobra2sentry->add_option("channel", channel, "Channel")->required();
     cobra2sentry->add_flag("-v", verbose, "Verbose");
     cobra2sentry->add_flag("-s", strict, "Strict mode. Error out when sending to sentry fails");
     cobra2sentry->add_option("--pidfile", pidfile, "Pid file");
     cobra2sentry->add_option("--filter", filter, "Stream SQL Filter");
+    addTLSOptions(cobra2sentry);
 
     CLI::App* cobra2redisApp =
         app.add_subcommand("cobra_metrics_to_redis", "Cobra metrics to redis");
@@ -282,17 +298,20 @@ int main(int argc, char** argv)
     cobra2redisApp->add_option("--hostname", hostname, "Redis hostname");
     cobra2redisApp->add_option("--port", redisPort, "Redis port");
     cobra2redisApp->add_flag("-q", quiet, "Quiet / only display stats");
+    addTLSOptions(cobra2redisApp);
 
-    CLI::App* runApp = app.add_subcommand("snake", "Snake server");
-    runApp->add_option("--port", port, "Connection url");
-    runApp->add_option("--host", hostname, "Hostname");
-    runApp->add_option("--pidfile", pidfile, "Pid file");
-    runApp->add_option("--redis_hosts", redisHosts, "Redis hosts");
-    runApp->add_option("--redis_port", redisPort, "Redis hosts");
-    runApp->add_option("--redis_password", redisPassword, "Redis password");
-    runApp->add_option("--apps_config_path", appsConfigPath, "Path to auth data")
+    CLI::App* snakeApp = app.add_subcommand("snake", "Snake server");
+    snakeApp->add_option("--port", port, "Connection url");
+    snakeApp->add_option("--host", hostname, "Hostname");
+    snakeApp->add_option("--pidfile", pidfile, "Pid file");
+    snakeApp->add_option("--redis_hosts", redisHosts, "Redis hosts");
+    snakeApp->add_option("--redis_port", redisPort, "Redis hosts");
+    snakeApp->add_option("--redis_password", redisPassword, "Redis password");
+    snakeApp->add_option("--apps_config_path", appsConfigPath, "Path to auth data")
         ->check(CLI::ExistingPath);
-    runApp->add_flag("-v", verbose, "Verbose");
+    snakeApp->add_flag("-v", verbose, "Verbose");
+    snakeApp->add_flag("-d", disablePong, "Disable Pongs");
+    addTLSOptions(snakeApp);
 
     CLI::App* httpServerApp = app.add_subcommand("httpd", "HTTP server");
     httpServerApp->add_option("--port", port, "Port");
@@ -314,6 +333,7 @@ int main(int argc, char** argv)
     proxyServerApp->add_option("--host", hostname, "Hostname");
     proxyServerApp->add_option("--remote_host", remoteHost, "Remote Hostname");
     proxyServerApp->add_flag("-v", verbose, "Verbose");
+    addTLSOptions(proxyServerApp);
 
     CLI::App* minidumpApp = app.add_subcommand("upload_minidump", "Upload a minidump to sentry");
     minidumpApp->add_option("--minidump", minidump, "Minidump path")->check(CLI::ExistingPath);
@@ -321,6 +341,9 @@ int main(int argc, char** argv)
     minidumpApp->add_option("--project", project, "Sentry Project")->required();
     minidumpApp->add_option("--key", key, "Sentry Key")->required();
     minidumpApp->add_flag("-v", verbose, "Verbose");
+
+    CLI::App* dnsLookupApp = app.add_subcommand("dnslookup", "DNS lookup");
+    dnsLookupApp->add_option("host", hostname, "Hostname")->required();
 
     CLI11_PARSE(app, argc, argv);
 
@@ -347,7 +370,7 @@ int main(int argc, char** argv)
     }
     else if (app.got_subcommand("send"))
     {
-        ret = ix::ws_send_main(url, path, tlsOptions);
+        ret = ix::ws_send_main(url, path, disablePerMessageDeflate, tlsOptions);
     }
     else if (app.got_subcommand("receive"))
     {
@@ -371,7 +394,7 @@ int main(int argc, char** argv)
     }
     else if (app.got_subcommand("echo_server"))
     {
-        ret = ix::ws_echo_server_main(port, greetings, hostname, tlsOptions);
+        ret = ix::ws_echo_server_main(port, greetings, hostname, tlsOptions, ipv6);
     }
     else if (app.got_subcommand("broadcast_server"))
     {
@@ -408,16 +431,17 @@ int main(int argc, char** argv)
     else if (app.got_subcommand("cobra_subscribe"))
     {
         ret = ix::ws_cobra_subscribe_main(
-            appkey, endpoint, rolename, rolesecret, channel, filter, quiet);
+            appkey, endpoint, rolename, rolesecret, channel, filter, quiet, tlsOptions);
     }
     else if (app.got_subcommand("cobra_publish"))
     {
-        ret = ix::ws_cobra_publish_main(appkey, endpoint, rolename, rolesecret, channel, path);
+        ret = ix::ws_cobra_publish_main(
+            appkey, endpoint, rolename, rolesecret, channel, path, tlsOptions);
     }
     else if (app.got_subcommand("cobra_metrics_publish"))
     {
         ret = ix::ws_cobra_metrics_publish_main(
-            appkey, endpoint, rolename, rolesecret, channel, path, stress);
+            appkey, endpoint, rolename, rolesecret, channel, path, stress, tlsOptions);
     }
     else if (app.got_subcommand("cobra_to_statsd"))
     {
@@ -431,22 +455,47 @@ int main(int argc, char** argv)
                                           statsdPort,
                                           prefix,
                                           fields,
-                                          verbose);
+                                          verbose,
+                                          tlsOptions);
     }
     else if (app.got_subcommand("cobra_to_sentry"))
     {
-        ret = ix::ws_cobra_to_sentry_main(
-            appkey, endpoint, rolename, rolesecret, channel, filter, dsn, verbose, strict, jobs);
+        ret = ix::ws_cobra_to_sentry_main(appkey,
+                                          endpoint,
+                                          rolename,
+                                          rolesecret,
+                                          channel,
+                                          filter,
+                                          dsn,
+                                          verbose,
+                                          strict,
+                                          jobs,
+                                          maxQueueSize,
+                                          tlsOptions);
     }
     else if (app.got_subcommand("cobra_metrics_to_redis"))
     {
-        ret = ix::ws_cobra_metrics_to_redis(
-            appkey, endpoint, rolename, rolesecret, channel, filter, hostname, redisPort);
+        ret = ix::ws_cobra_metrics_to_redis(appkey,
+                                            endpoint,
+                                            rolename,
+                                            rolesecret,
+                                            channel,
+                                            filter,
+                                            hostname,
+                                            redisPort,
+                                            tlsOptions);
     }
     else if (app.got_subcommand("snake"))
     {
-        ret = ix::ws_snake_main(
-            port, hostname, redisHosts, redisPort, redisPassword, verbose, appsConfigPath);
+        ret = ix::ws_snake_main(port,
+                                hostname,
+                                redisHosts,
+                                redisPort,
+                                redisPassword,
+                                verbose,
+                                appsConfigPath,
+                                tlsOptions,
+                                disablePong);
     }
     else if (app.got_subcommand("httpd"))
     {
@@ -468,13 +517,17 @@ int main(int argc, char** argv)
     {
         ret = ix::ws_sentry_minidump_upload(metadata, minidump, project, key, verbose);
     }
+    else if (app.got_subcommand("dnslookup"))
+    {
+        ret = ix::ws_dns_lookup(hostname);
+    }
     else if (version)
     {
-        std::cout << "ws " << ix::userAgent() << std::endl;
+        spdlog::info("ws {}", ix::userAgent());
     }
     else
     {
-        std::cerr << "A subcommand or --version is required" << std::endl;
+        spdlog::error("A subcommand or --version is required");
     }
 
     ix::uninitNetSystem();

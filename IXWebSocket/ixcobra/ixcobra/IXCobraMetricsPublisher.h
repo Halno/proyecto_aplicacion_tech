@@ -9,12 +9,14 @@
 #include "IXCobraMetricsThreadedPublisher.h"
 #include <atomic>
 #include <chrono>
-#include <jsoncpp/json/json.h>
+#include <json/json.h>
 #include <string>
 #include <unordered_map>
 
 namespace ix
 {
+    struct SocketTLSOptions;
+
     class CobraMetricsPublisher
     {
     public:
@@ -43,7 +45,8 @@ namespace ix
                        const std::string& channel,
                        const std::string& rolename,
                        const std::string& rolesecret,
-                       bool enablePerMessageDeflate);
+                       bool enablePerMessageDeflate,
+                       const SocketTLSOptions& socketTLSOptions);
 
         /// Setter for the list of blacklisted metrics ids.
         /// That list is sorted internally for fast lookups

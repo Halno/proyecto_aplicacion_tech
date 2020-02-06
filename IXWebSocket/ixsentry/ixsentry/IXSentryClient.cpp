@@ -9,7 +9,9 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <ixwebsocket/IXWebSocketHttpHeaders.h>
+#include <ixwebsocket/IXWebSocketVersion.h>
 #include <ixcore/utils/IXCoreLogger.h>
 
 
@@ -119,26 +121,6 @@ namespace ix
     {
         Json::Value payload;
 
-        payload["platform"] = "python";
-        payload["sdk"]["name"] = "ws";
-        payload["sdk"]["version"] = "1.0.0";
-        payload["timestamp"] = SentryClient::getIso8601();
-
-        bool isNoisyTypes = msg["id"].asString() == "game_noisytypes_id";
-
-        std::string stackTraceFieldName = isNoisyTypes ? "traceback" : "stack";
-        std::string stack(msg["data"][stackTraceFieldName].asString());
-
-        Json::Value exception;
-        exception["stacktrace"]["frames"] = parseLuaStackTrace(stack);
-        exception["value"] = isNoisyTypes ? parseExceptionName(stack) : msg["data"]["message"];
-
-        payload["exception"].append(exception);
-
-        Json::Value extra;
-        extra["cobra_event"] = msg;
-        extra["cobra_event"] = msg;
-
         //
         // "tags": [
         //   [
@@ -147,8 +129,72 @@ namespace ix
         //   ],
         //  ]
         //
-        Json::Value tags;
+        Json::Value tags(Json::arrayValue);
 
+        payload["platform"] = "python";
+        payload["sdk"]["name"] = "ws";
+        payload["sdk"]["version"] = IX_WEBSOCKET_VERSION;
+        payload["timestamp"] = SentryClient::getIso8601();
+
+        bool isNoisyTypes = msg["id"].asString() == "game_noisytypes_id";
+
+        std::string stackTraceFieldName = isNoisyTypes ? "traceback" : "stack";
+        std::string stack;
+        std::string message;
+
+        if (isNoisyTypes)
+        {
+            stack = msg["data"][stackTraceFieldName].asString();
+            message = parseExceptionName(stack);
+        }
+        else // logging
+        {
+            if (msg["data"].isMember("info"))
+            {
+                stack = msg["data"]["info"][stackTraceFieldName].asString();
+                message = msg["data"]["info"]["message"].asString();
+
+                if (msg["data"].isMember("tags"))
+                {
+                    auto members = msg["data"]["tags"].getMemberNames();
+
+                    for (auto member : members)
+                    {
+                        Json::Value tag;
+                        tag.append(member);
+                        tag.append(msg["data"]["tags"][member]);
+                        tags.append(tag);
+                    }
+                }
+
+                if (msg["data"]["info"].isMember("level_str"))
+                {
+                    // https://docs.sentry.io/enriching-error-data/context/?platform=python#setting-the-level
+                    std::string level = msg["data"]["info"]["level_str"].asString();
+                    if (level == "critical")
+                    {
+                        level = "fatal";
+                    }
+                    payload["level"] = level;
+                }
+            }
+            else
+            {
+                stack = msg["data"][stackTraceFieldName].asString();
+                message = msg["data"]["message"].asString();
+            }
+        }
+
+        Json::Value exception;
+        exception["stacktrace"]["frames"] = parseLuaStackTrace(stack);
+        exception["value"] = message;
+
+        payload["exception"].append(exception);
+
+        Json::Value extra;
+        extra["cobra_event"] = msg;
+
+        // Builtin tags
         Json::Value gameTag;
         gameTag.append("game");
         gameTag.append(msg["device"]["game"]);
@@ -163,6 +209,11 @@ namespace ix
         environmentTag.append("environment");
         environmentTag.append(msg["device"]["environment"]);
         tags.append(environmentTag);
+
+        Json::Value clientVersionTag;
+        clientVersionTag.append("client_version");
+        clientVersionTag.append(msg["device"]["app_version"]);
+        tags.append(clientVersionTag);
 
         payload["tags"] = tags;
 
@@ -227,7 +278,6 @@ namespace ix
 
         args->url = computeUrl(project, key);
         args->body = _httpClient->serializeHttpFormDataParameters(multipartBoundary, httpFormDataParameters, httpParameters);
-
 
         _httpClient->performRequest(args, onResponseCallback);
     }

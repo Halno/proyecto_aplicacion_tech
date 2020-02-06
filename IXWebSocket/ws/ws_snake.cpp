@@ -5,8 +5,8 @@
  */
 
 #include <fstream>
-#include <iostream>
 #include <ixsnake/IXSnakeServer.h>
+#include <spdlog/spdlog.h>
 #include <sstream>
 
 namespace
@@ -43,7 +43,9 @@ namespace ix
                       int redisPort,
                       const std::string& redisPassword,
                       bool verbose,
-                      const std::string& appsConfigPath)
+                      const std::string& appsConfigPath,
+                      const SocketTLSOptions& socketTLSOptions,
+                      bool disablePong)
     {
         snake::AppConfig appConfig;
         appConfig.port = port;
@@ -51,16 +53,18 @@ namespace ix
         appConfig.verbose = verbose;
         appConfig.redisPort = redisPort;
         appConfig.redisPassword = redisPassword;
+        appConfig.socketTLSOptions = socketTLSOptions;
+        appConfig.disablePong = disablePong;
 
         // Parse config file
         auto str = readAsString(appsConfigPath);
         if (str.empty())
         {
-            std::cout << "Cannot read content of " << appsConfigPath << std::endl;
+            spdlog::error("Cannot read content of {}", appsConfigPath);
             return 1;
         }
 
-        std::cout << str << std::endl;
+        spdlog::error(str);
         auto apps = nlohmann::json::parse(str);
         appConfig.apps = apps["apps"];
 

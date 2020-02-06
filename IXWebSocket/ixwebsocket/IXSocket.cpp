@@ -54,14 +54,17 @@ namespace ix
         // to ::poll does fix that.
         //
         // However poll isn't as portable as select and has bugs on Windows, so we
-        // should write a shim to fallback to select on those platforms. See
+        // have a shim to fallback to select on those platforms. See
         // https://github.com/mpv-player/mpv/pull/5203/files for such a select wrapper.
         //
         nfds_t nfds = 1;
         struct pollfd fds[2];
+        memset(fds, 0, sizeof(fds));
 
         fds[0].fd = sockfd;
         fds[0].events = (readyToRead) ? POLLIN : POLLOUT;
+
+        // this is ignored by poll, but our select based poll wrapper on Windows needs it
         fds[0].events |= POLLERR;
 
         // File descriptor used to interrupt select when needed
@@ -131,6 +134,11 @@ namespace ix
                 errno = optval;
             }
 #endif
+        }
+        else if (sockfd != -1 && (fds[0].revents & POLLERR || fds[0].revents & POLLHUP ||
+                                  fds[0].revents & POLLNVAL))
+        {
+            pollResult = PollResultType::Error;
         }
 
         return pollResult;

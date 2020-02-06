@@ -26,6 +26,8 @@ namespace ix
         SocketMbedTLS(const SocketTLSOptions& tlsOptions, int fd = -1);
         ~SocketMbedTLS();
 
+        virtual bool accept(std::string& errMsg) final;
+
         virtual bool connect(const std::string& host,
                              int port,
                              std::string& errMsg,
@@ -33,7 +35,6 @@ namespace ix
         virtual void close() final;
 
         virtual ssize_t send(char* buffer, size_t length) final;
-        virtual ssize_t send(const std::string& buffer) final;
         virtual ssize_t recv(void* buffer, size_t length) final;
 
     private:
@@ -42,11 +43,13 @@ namespace ix
         mbedtls_entropy_context _entropy;
         mbedtls_ctr_drbg_context _ctr_drbg;
         mbedtls_x509_crt _cacert;
+        mbedtls_x509_crt _cert;
+        mbedtls_pk_context _pkey;
 
         std::mutex _mutex;
         SocketTLSOptions _tlsOptions;
 
-        bool init(const std::string& host, std::string& errMsg);
+        bool init(const std::string& host, bool isClient, std::string& errMsg);
         void initMBedTLS();
     };
 

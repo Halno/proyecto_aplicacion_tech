@@ -20,7 +20,16 @@ namespace snake
         : _appConfig(appConfig)
         , _server(appConfig.port, appConfig.hostname)
     {
-        ;
+        _server.setTLSOptions(appConfig.socketTLSOptions);
+
+        if (appConfig.disablePong)
+        {
+            _server.disablePong();
+        }
+
+        std::stringstream ss;
+        ss << "Listening on " << appConfig.hostname << ":" << appConfig.port;
+        ix::IXCoreLogger::Log(ss.str().c_str());
     }
 
     //

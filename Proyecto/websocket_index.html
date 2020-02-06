@@ -2,7 +2,7 @@
 <html>
 <head>
 <script>
-let socket = new WebSocket("ws://127.0.0.1:9990");
+let socket = new WebSocket("wss://localhost:9990");
 
 socket.onopen = function(e) {
   alert("[open] Connection established");
@@ -51,7 +51,7 @@ function trigger()
     socket.send( JSON.stringify(mensajeJson));
 };
 
-/*
+
 function enviarLogin(nombre, password)
 {
     var id_mensaje = autocalcularId();
@@ -62,11 +62,13 @@ function enviarLogin(nombre, password)
     socket.send( JSON.stringify(mensajeJson));
 };
 
-function enviarLogout()
+function enviarLogout(nombre, password)
 {
     var id_mensaje = autocalcularId();
+    var nombre_Usuario = nombre;
+    var contrasenya = password;
 
-    var mensajeJson = {tipo: "logout", id: id_mensaje}
+    var mensajeJson = {tipo: "logout", id: id_mensaje, usuario: nombre_Usuario, contrasenya_Usuario: contrasenya}
     socket.send( JSON.stringify(mensajeJson));
 };
 
@@ -97,7 +99,7 @@ function mensajeChat()
     var mensajeJson = {tipo: "mensajeChat", id: id_mensaje, chat: mensaje}
     socket.send( JSON.stringify(mensajeJson));
 }
-*/
+
 
 function autocalcularId()
 {

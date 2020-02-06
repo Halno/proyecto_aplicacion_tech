@@ -28,10 +28,11 @@ public:
     bool update();
     bool insert();
     bool remove();
+    bool comprobarContrasenya();
 
 
-    bool registro();
-    bool login();
+    bool registro(QString nombre);
+    bool loginAndLogout();
     bool logout();
     bool nuevaEntrada(JSON receivedObject);
 };

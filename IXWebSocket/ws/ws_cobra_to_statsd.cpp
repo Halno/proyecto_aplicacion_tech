@@ -6,7 +6,7 @@
 
 #include <atomic>
 #include <chrono>
-#include <iostream>
+#include <condition_variable>
 #include <ixcobra/IXCobraConnection.h>
 #include <spdlog/spdlog.h>
 #include <sstream>
@@ -16,6 +16,59 @@
 #ifndef _WIN32
 #include <statsd_client.h>
 #endif
+
+namespace
+{
+    class QueueManager
+    {
+    public:
+        QueueManager(size_t maxQueueSize, std::atomic<bool>& stop)
+            : _maxQueueSize(maxQueueSize)
+            , _stop(stop)
+        {
+        }
+
+        Json::Value pop();
+        void add(Json::Value msg);
+
+    private:
+        std::queue<Json::Value> _queue;
+        std::mutex _mutex;
+        std::condition_variable _condition;
+        size_t _maxQueueSize;
+        std::atomic<bool>& _stop;
+    };
+
+    Json::Value QueueManager::pop()
+    {
+        std::unique_lock<std::mutex> lock(_mutex);
+
+        if (_queue.empty())
+        {
+            Json::Value val;
+            return val;
+        }
+
+        _condition.wait(lock, [this] { return !_stop; });
+
+        auto msg = _queue.front();
+        _queue.pop();
+        return msg;
+    }
+
+    void QueueManager::add(Json::Value msg)
+    {
+        std::unique_lock<std::mutex> lock(_mutex);
+
+        // if the sending is not fast enough there is no point
+        // in queuing too many events.
+        if (_queue.size() < _maxQueueSize)
+        {
+            _queue.push(msg);
+            _condition.notify_one();
+        }
+    }
+} // namespace
 
 namespace ix
 {
@@ -66,96 +119,132 @@ namespace ix
                                 int port,
                                 const std::string& prefix,
                                 const std::string& fields,
-                                bool verbose)
+                                bool verbose,
+                                const ix::SocketTLSOptions& tlsOptions)
     {
         ix::CobraConnection conn;
-        conn.configure(
-            appkey, endpoint, rolename, rolesecret, ix::WebSocketPerMessageDeflateOptions(true));
+        conn.configure(appkey,
+                       endpoint,
+                       rolename,
+                       rolesecret,
+                       ix::WebSocketPerMessageDeflateOptions(true),
+                       tlsOptions);
         conn.connect();
 
         auto tokens = parseFields(fields);
 
-        // statsd client
-        // test with netcat as a server: `nc -ul 8125`
-        bool statsdBatch = true;
-#ifndef _WIN32
-        statsd::StatsdClient statsdClient(host, port, prefix, statsdBatch);
-#else
-        int statsdClient;
-#endif
-
         Json::FastWriter jsonWriter;
-        uint64_t msgCount = 0;
+        std::atomic<uint64_t> sentCount(0);
+        std::atomic<uint64_t> receivedCount(0);
+        std::atomic<bool> stop(false);
 
-        conn.setEventCallback([&conn,
-                               &channel,
-                               &filter,
-                               &jsonWriter,
-                               &statsdClient,
-                               verbose,
-                               &tokens,
-                               &prefix,
-                               &msgCount](ix::CobraConnectionEventType eventType,
-                                          const std::string& errMsg,
-                                          const ix::WebSocketHttpHeaders& headers,
-                                          const std::string& subscriptionId,
-                                          CobraConnection::MsgId msgId) {
-            if (eventType == ix::CobraConnection_EventType_Open)
+        size_t maxQueueSize = 1000;
+        QueueManager queueManager(maxQueueSize, stop);
+
+        auto timer = [&sentCount, &receivedCount] {
+            while (true)
             {
-                spdlog::info("Subscriber connected");
+                spdlog::info("messages received {} sent {}", receivedCount, sentCount);
 
-                for (auto it : headers)
+                auto duration = std::chrono::seconds(1);
+                std::this_thread::sleep_for(duration);
+            }
+        };
+
+        std::thread t1(timer);
+
+        auto statsdSender = [&queueManager, &host, &port, &sentCount, &tokens, &prefix, &stop] {
+            // statsd client
+            // test with netcat as a server: `nc -ul 8125`
+            bool statsdBatch = true;
+#ifndef _WIN32
+            statsd::StatsdClient statsdClient(host, port, prefix, statsdBatch);
+#else
+            int statsdClient;
+#endif
+            while (true)
+            {
+                Json::Value msg = queueManager.pop();
+
+                if (msg.isNull()) continue;
+                if (stop) return;
+
+                std::string id;
+                for (auto&& attr : tokens)
                 {
-                    spdlog::info("{}: {}", it.first, it.second);
+                    id += ".";
+                    id += extractAttr(attr, msg);
                 }
-            }
-            if (eventType == ix::CobraConnection_EventType_Closed)
-            {
-                spdlog::info("Subscriber closed");
-            }
-            else if (eventType == ix::CobraConnection_EventType_Authenticated)
-            {
-                spdlog::info("Subscriber authenticated");
-                conn.subscribe(channel,
-                               filter,
-                               [&jsonWriter, &statsdClient, verbose, &tokens, &prefix, &msgCount](
-                                   const Json::Value& msg) {
-                                   if (verbose)
-                                   {
-                                       spdlog::info(jsonWriter.write(msg));
-                                   }
 
-                                   std::string id;
-                                   for (auto&& attr : tokens)
-                                   {
-                                       id += ".";
-                                       id += extractAttr(attr, msg);
-                                   }
-
-                                   spdlog::info("{} {}{}", msgCount++, prefix, id);
+                sentCount += 1;
 
 #ifndef _WIN32
-                                   statsdClient.count(id, 1);
+                statsdClient.count(id, 1);
 #endif
-                               });
             }
-            else if (eventType == ix::CobraConnection_EventType_Subscribed)
-            {
-                spdlog::info("Subscriber: subscribed to channel {}", subscriptionId);
-            }
-            else if (eventType == ix::CobraConnection_EventType_UnSubscribed)
-            {
-                spdlog::info("Subscriber: unsubscribed from channel {}", subscriptionId);
-            }
-            else if (eventType == ix::CobraConnection_EventType_Error)
-            {
-                spdlog::error("Subscriber: error {}", errMsg);
-            }
-            else if (eventType == ix::CobraConnection_EventType_Published)
-            {
-                spdlog::error("Published message hacked: {}", msgId);
-            }
-        });
+        };
+
+        std::thread t2(statsdSender);
+
+        conn.setEventCallback(
+            [&conn, &channel, &filter, &jsonWriter, verbose, &queueManager, &receivedCount](
+                ix::CobraConnectionEventType eventType,
+                const std::string& errMsg,
+                const ix::WebSocketHttpHeaders& headers,
+                const std::string& subscriptionId,
+                CobraConnection::MsgId msgId) {
+                if (eventType == ix::CobraConnection_EventType_Open)
+                {
+                    spdlog::info("Subscriber connected");
+
+                    for (auto it : headers)
+                    {
+                        spdlog::info("{}: {}", it.first, it.second);
+                    }
+                }
+                if (eventType == ix::CobraConnection_EventType_Closed)
+                {
+                    spdlog::info("Subscriber closed");
+                }
+                else if (eventType == ix::CobraConnection_EventType_Authenticated)
+                {
+                    spdlog::info("Subscriber authenticated");
+                    conn.subscribe(channel,
+                                   filter,
+                                   [&jsonWriter, &queueManager, verbose, &receivedCount](
+                                       const Json::Value& msg) {
+                                       if (verbose)
+                                       {
+                                           spdlog::info(jsonWriter.write(msg));
+                                       }
+
+                                       receivedCount++;
+
+                                       ++receivedCount;
+                                       queueManager.add(msg);
+                                   });
+                }
+                else if (eventType == ix::CobraConnection_EventType_Subscribed)
+                {
+                    spdlog::info("Subscriber: subscribed to channel {}", subscriptionId);
+                }
+                else if (eventType == ix::CobraConnection_EventType_UnSubscribed)
+                {
+                    spdlog::info("Subscriber: unsubscribed from channel {}", subscriptionId);
+                }
+                else if (eventType == ix::CobraConnection_EventType_Error)
+                {
+                    spdlog::error("Subscriber: error {}", errMsg);
+                }
+                else if (eventType == ix::CobraConnection_EventType_Published)
+                {
+                    spdlog::error("Published message hacked: {}", msgId);
+                }
+                else if (eventType == ix::CobraConnection_EventType_Pong)
+                {
+                    spdlog::info("Received websocket pong");
+                }
+            });
 
         while (true)
         {

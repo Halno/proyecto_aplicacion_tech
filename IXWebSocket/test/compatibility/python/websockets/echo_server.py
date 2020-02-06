@@ -3,20 +3,19 @@
 # WS server example
 
 import asyncio
+import os
 import websockets
 
-async def hello(websocket, path):
-    await websocket.send(f"> Welcome !")
 
-    name = await websocket.recv()
-    print(f"< {name}")
+async def echo(websocket, path):
+    msg = await websocket.recv()
+    print(f'Received {len(msg)} bytes')
+    await websocket.send(msg)
 
-    greeting = f"Hello {name}!"
+host = os.getenv('BIND_HOST', 'localhost')
+print(f'Serving on {host}:8766')
 
-    await websocket.send(greeting)
-    print(f"> {greeting}")
-
-start_server = websockets.serve(hello, 'localhost', 8765)
+start_server = websockets.serve(echo, host, 8766, max_size=2 ** 30)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()

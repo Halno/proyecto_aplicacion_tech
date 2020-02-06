@@ -1,5 +1,6 @@
 #include "usuario.h"
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QSqlRecord>
 #include <QDebug>
 
@@ -33,19 +34,23 @@ void Usuario::load(int id)
 
 bool Usuario::find(QString nombre)
 {
+    bool result = false;
     QSqlQuery orden;
-    orden.prepare("SELECT * FROM usuario WHERE nombre_usuario = :nombreUsuario LIMIT 1");
-    orden.bindValue(":nombreUsuario", nombre);
-    bool result {orden.exec()};
+    orden.prepare("SELECT * FROM usuario WHERE nombre_usuario = :nombre_usuario LIMIT 1");
+    orden.bindValue(":nombre_usuario", nombre);
 
-    if (result)
+    if (orden.exec())
     {
-        return true;
+        if (orden.size() > 0) result = true;
     }
     else
     {
-        return false;
-    }
+          qDebug() << orden.lastError().text();
+    } // end if
+
+    qDebug() << ((result) ? "existe" : "no existe");
+
+    return result;
 }
 
 bool Usuario::update()
@@ -89,37 +94,66 @@ bool Usuario::remove()
     return result;
 }
 
-bool Usuario::registro()
+bool Usuario::registro(QString nombre)
 {
-    //Se llama a esta función cuando un usuario intenta registrarse.
-    //1. La función comprueba que el nombre de usuario no se encuentre en uso.
+    bool result = false;
+    QSqlQuery orden;
+    orden.prepare("SELECT * FROM usuario WHERE nombre_usuario = :nombre_usuario LIMIT 1");
+    orden.bindValue(":nombre_usuario", nombre);
 
-    //2. Si se encuentra en uso, se le notifica al usuario
-    //   para que introduzca otro. (Devuelve false).
+    if (orden.exec())
+    {
+        if (orden.size() > 0) result = true;
+    }
+    else
+    {
+          qDebug() << orden.lastError().text();
+    } // end if
 
-    //3. De lo contrario, se crea la entrada en la BD con el usuario
-    //   y la contraseña codificada. (Devuelve true). -> Se llama a la función insert().
+    qDebug() << ((result) ? "existe" : "no existe");
+
+    return result;
 
 }
 
-bool Usuario::login()
+bool Usuario::comprobarContrasenya()
 {
 
+    bool result = false;
     QSqlQuery orden;
     orden.prepare("SELECT * FROM usuario WHERE nombre_usuario = :nombreUsuario AND password_usuario = :passwordUsuario LIMIT 1");
     orden.bindValue(":nombreUsuario", m_nombreUsuario);
     orden.bindValue(":passwordUsuario", m_passwordUsuario);
-    bool result {orden.exec()};
 
-    if (result)
+    if (orden.exec())
     {
+        if (orden.size() > 0) result = true;
+    }
+    else
+    {
+          qDebug() << orden.lastError().text();
+    } // end if
+
+    qDebug() << ((result) ? "existe" : "no existe");
+
+    return result;
+}
+
+bool Usuario::loginAndLogout()
+{
+    QSqlQuery orden;
+    orden.prepare("UPDATE usuario SET sesion_iniciada = NOT sesion_iniciada WHERE nombre_usuario = :nombreUsuario");
+    orden.bindValue(":nombreUsuario", m_nombreUsuario);
+    if (orden.exec())
+    {
+        qDebug() <<orden.lastError().text();
         return true;
     }
     else
     {
+        qDebug() <<orden.lastError().text();
         return false;
     }
-
 }
 
 bool Usuario::logout()

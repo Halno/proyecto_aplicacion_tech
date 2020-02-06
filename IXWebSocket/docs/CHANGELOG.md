@@ -1,5 +1,215 @@
 # Changelog
-All notable changes to this project will be documented in this file.
+All changes to this project will be documented in this file.
+
+## [8.0.6] - 2020-01-31
+
+(snake) add an option to disable answering pongs as response to pings, to test cobra client behavior with hanged connections 
+
+## [8.0.5] - 2020-01-31
+
+(IXCobraConnection) set a ping timeout of 90 seconds. If no pong messages are received as responses to ping for a while, give up and close the connection
+
+## [8.0.4] - 2020-01-31
+
+(cobra to sentry) remove noisy logging
+
+## [8.0.3] - 2020-01-30
+
+(ixcobra) check if we are authenticated in publishNext before trying to publish a message
+
+## [8.0.2] - 2020-01-28
+
+Extract severity level when emitting messages to sentry
+
+## [8.0.1] - 2020-01-28
+
+Fix bug #151 - If a socket connection is interrupted, calling stop() on the IXWebSocket object blocks until the next retry
+
+## [8.0.0] - 2020-01-26
+
+(SocketServer) add ability to bind on an ipv6 address
+
+## [7.9.6] - 2020-01-22
+
+(ws) add a dnslookup sub-command, to get the ip address of a remote host
+
+## [7.9.5] - 2020-01-14
+
+(windows) fix #144, get rid of stubbed/un-implemented windows schannel ssl backend
+
+## [7.9.4] - 2020-01-12
+
+(openssl + mbedssl) fix #140, can send large files with ws send over ssl / still broken with apple ssl
+
+## [7.9.3] - 2020-01-10
+
+(apple ssl) model write method after the OpenSSL one for consistency
+
+## [7.9.2] - 2020-01-06
+
+(apple ssl) unify read and write ssl utility code
+
+## [7.9.1] - 2020-01-06
+
+(websocket client) better error propagation when errors are detected while sending data
+(ws send) detect failures to send big files, terminate in those cases and report error
+
+## [7.9.0] - 2020-01-04
+
+(ws send) add option (-x) to disable per message deflate compression
+
+## [7.8.9] - 2020-01-04
+
+(ws send + receive) handle all message types (ping + pong + fragment) / investigate #140
+
+## [7.8.8] - 2019-12-28
+
+(mbedtls) fix related to private key file parsing and initialization
+
+## [7.8.6] - 2019-12-28
+
+(ws cobra to sentry/statsd) fix for handling null events properly for empty queues + use queue to send data to statsd
+
+## [7.8.5] - 2019-12-28
+
+(ws cobra to sentry) handle null events for empty queues
+
+## [7.8.4] - 2019-12-27
+
+(ws cobra to sentry) game is picked in a fair manner, so that all games get the same share of sent events
+
+## [7.8.3] - 2019-12-27
+
+(ws cobra to sentry) refactor queue related code into a class
+
+## [7.8.2] - 2019-12-25
+
+(ws cobra to sentry) bound the queue size used to hold up cobra messages before they are sent to sentry. Default queue size is a 100 messages. Without such limit the program runs out of memory when a subscriber receive a lot of messages that cannot make it to sentry
+
+## [7.8.1] - 2019-12-25
+
+(ws client) use correct compilation defines so that spdlog is not used as a header only library (reduce binary size and increase compilation speed)
+
+## [7.8.0] - 2019-12-24
+
+(ws client) all commands use spdlog instead of std::cerr or std::cout for logging
+
+## [7.6.5] - 2019-12-24
+
+(cobra client) send a websocket ping every 30s to keep the connection opened
+
+## [7.6.4] - 2019-12-22
+
+(client) error handling, quote url in error case when failing to parse one
+(ws) ws_cobra_publish: register callbacks before connecting
+(doc) mention mbedtls in supported ssl server backend
+
+## [7.6.3] - 2019-12-20
+
+(tls) add a simple description of the TLS configuration routine for debugging
+
+## [7.6.2] - 2019-12-20
+
+(mbedtls) correct support for using own certificate and private key
+
+## [7.6.1] - 2019-12-20
+
+(ws commands) in websocket proxy, disable automatic reconnections + in Dockerfile, use alpine 3.11
+
+## [7.6.0] - 2019-12-19
+
+(cobra) Add TLS options to all cobra commands and classes. Add example to the doc.
+
+## [7.5.8] - 2019-12-18
+
+(cobra-to-sentry) capture application version from device field
+
+## [7.5.7] - 2019-12-18
+
+(tls) Experimental TLS server support with mbedtls (windows) + process cert tlsoption (client + server)
+
+## [7.5.6] - 2019-12-18
+
+(tls servers) Make it clear that apple ssl and mbedtls backends do not support SSL in server mode
+
+## [7.5.5] - 2019-12-17
+
+(tls options client) TLSOptions struct _validated member should be initialized to false
+
+## [7.5.4] - 2019-12-16
+
+(websocket client) improve the error message when connecting to a non websocket server
+
+Before:
+
+```
+Connection error: Got bad status connecting to example.com:443, status: 200, HTTP Status line: HTTP/1.1 200 OK
+```
+
+After:
+
+```
+Connection error: Expecting status 101 (Switching Protocol), got 200 status connecting to example.com:443, HTTP Status line: HTTP/1.1 200 OK
+```
+
+## [7.5.3] - 2019-12-12
+
+(server) attempt at fixing #131 by using blocking writes in server mode
+
+## [7.5.2] - 2019-12-11
+
+(ws) cobra to sentry - created events with sentry tags based on tags present in the cobra messages
+
+## [7.5.1] - 2019-12-06
+
+(mac) convert SSL errors to utf8
+
+## [7.5.0] - 2019-12-05
+
+- (ws) cobra to sentry. Handle Error 429 Too Many Requests and politely wait before sending more data to sentry.
+
+In the example below sentry we are sending data too fast, sentry asks us to slow down which we do. Notice how the sent count stop increasing, while we are waiting for 41 seconds.
+
+```
+[2019-12-05 15:50:33.759] [info] messages received 2449 sent 3
+[2019-12-05 15:50:34.759] [info] messages received 5533 sent 7
+[2019-12-05 15:50:35.759] [info] messages received 8612 sent 11
+[2019-12-05 15:50:36.759] [info] messages received 11562 sent 15
+[2019-12-05 15:50:37.759] [info] messages received 14410 sent 19
+[2019-12-05 15:50:38.759] [info] messages received 17236 sent 23
+[2019-12-05 15:50:39.282] [error] Error sending data to sentry: 429
+[2019-12-05 15:50:39.282] [error] Body: {"exception":[{"stacktrace":{"frames":[{"filename":"WorldScene.lua","function":"WorldScene.lua:1935","lineno":1958},{"filename":"WorldScene.lua","function":"onUpdate_WorldCam","lineno":1921},{"filename":"WorldMapTile.lua","function":"__index","lineno":239}]},"value":"noisytypes: Attempt to call nil(nil,2224139838)!"}],"platform":"python","sdk":{"name":"ws","version":"1.0.0"},"tags":[["game","niso"],["userid","107638363"],["environment","live"]],"timestamp":"2019-12-05T23:50:39Z"}
+
+[2019-12-05 15:50:39.282] [error] Response: {"error_name":"rate_limit","error":"Creation of this event was denied due to rate limiting"}
+[2019-12-05 15:50:39.282] [warning] Error 429 - Too Many Requests. ws will sleep and retry after 41 seconds
+[2019-12-05 15:50:39.760] [info] messages received 18839 sent 25
+[2019-12-05 15:50:40.760] [info] messages received 18839 sent 25
+[2019-12-05 15:50:41.760] [info] messages received 18839 sent 25
+[2019-12-05 15:50:42.761] [info] messages received 18839 sent 25
+[2019-12-05 15:50:43.762] [info] messages received 18839 sent 25
+[2019-12-05 15:50:44.763] [info] messages received 18839 sent 25
+[2019-12-05 15:50:45.768] [info] messages received 18839 sent 25
+```
+
+## [7.4.5] - 2019-12-03
+
+- (ws) #125 / fix build problem when jsoncpp is not installed locally
+
+## [7.4.4] - 2019-12-03
+
+- (ws) #125 / cmake detects an already installed jsoncpp and will try to use this one if present
+
+## [7.4.3] - 2019-12-03
+
+- (http client) use std::unordered_map instead of std::map for HttpParameters and HttpFormDataParameters class aliases
+
+## [7.4.2] - 2019-12-02
+
+- (client) internal IXDNSLookup class requires a valid cancellation request function callback to be passed in
+
+## [7.4.1] - 2019-12-02
+
+- (client) fix an overflow in the exponential back off code
 
 ## [7.4.0] - 2019-11-25
 

@@ -23,13 +23,22 @@ include_directories(
   ../ws
 )
 
+add_definitions(-DSPDLOG_COMPILED_LIB=1)
+
+find_package(JsonCpp)
+if (NOT JSONCPP_FOUND)
+  include_directories(../third_party/jsoncpp)
+  set(JSONCPP_SOURCES ../third_party/jsoncpp/jsoncpp.cpp)
+endif()
+
 # Shared sources
 set (SOURCES
+  ${JSONCPP_SOURCES}
+
   test_runner.cpp
   IXTest.cpp
   IXGetFreePort.cpp
   ../third_party/msgpack11/msgpack11.cpp
-  ../third_party/jsoncpp/jsoncpp.cpp
 
   IXSocketTest.cpp
   IXSocketConnectTest.cpp
@@ -46,12 +55,12 @@ set (SOURCES
   IXDNSLookupTest.cpp
   IXWebSocketSubProtocolTest.cpp
   IXSentryClientTest.cpp
+  IXWebSocketChatTest.cpp
 )
 
 # Some unittest don't work on windows yet
 if (UNIX)
   list(APPEND SOURCES
-    IXWebSocketChatTest.cpp
     IXWebSocketCloseTest.cpp
   )
 endif()
@@ -79,11 +88,18 @@ if (APPLE AND USE_TLS)
   target_link_libraries(ixwebsocket_unittest "-framework foundation" "-framework security")
 endif()
 
+if (JSONCPP_FOUND)
+  target_include_directories(ixwebsocket_unittest PUBLIC ${JSONCPP_INCLUDE_DIRS})
+  target_link_libraries(ixwebsocket_unittest ${JSONCPP_LIBRARIES})
+endif()
+
 target_link_libraries(ixwebsocket_unittest ixsnake)
 target_link_libraries(ixwebsocket_unittest ixcobra)
 target_link_libraries(ixwebsocket_unittest ixwebsocket)
 target_link_libraries(ixwebsocket_unittest ixcrypto)
 target_link_libraries(ixwebsocket_unittest ixcore)
 target_link_libraries(ixwebsocket_unittest ixsentry)
+
+target_link_libraries(ixwebsocket_unittest spdlog)
 
 install(TARGETS ixwebsocket_unittest DESTINATION bin)

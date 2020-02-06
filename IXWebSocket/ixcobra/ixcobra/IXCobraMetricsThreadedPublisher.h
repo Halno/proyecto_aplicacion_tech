@@ -9,7 +9,7 @@
 #include "IXCobraConnection.h"
 #include <atomic>
 #include <condition_variable>
-#include <jsoncpp/json/json.h>
+#include <json/json.h>
 #include <map>
 #include <mutex>
 #include <queue>
@@ -18,6 +18,8 @@
 
 namespace ix
 {
+    struct SocketTLSOptions;
+
     class CobraMetricsThreadedPublisher
     {
     public:
@@ -30,7 +32,8 @@ namespace ix
                        const std::string& channel,
                        const std::string& rolename,
                        const std::string& rolesecret,
-                       bool enablePerMessageDeflate);
+                       bool enablePerMessageDeflate,
+                       const SocketTLSOptions& socketTLSOptions);
 
         /// Start the worker thread, used for background publishing
         void start();

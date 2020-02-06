@@ -11,8 +11,14 @@
 #include "IXSocketConnect.h"
 #include <cassert>
 #include <errno.h>
+#ifdef _WIN32
+#include <Shlwapi.h>
+#else
 #include <fnmatch.h>
+#endif
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
 #include <openssl/x509v3.h>
+#endif
 #define socketerrno errno
 
 namespace ix
@@ -136,7 +142,11 @@ namespace ix
      */
     bool SocketOpenSSL::checkHost(const std::string& host, const char* pattern)
     {
+#ifdef _WIN32
+        return PathMatchSpecA(host.c_str(), pattern);
+#else
         return fnmatch(pattern, host.c_str(), 0) != FNM_NOMATCH;
+#endif
     }
 
     bool SocketOpenSSL::openSSLCheckServerCert(SSL* ssl,
@@ -593,42 +603,30 @@ namespace ix
 
     ssize_t SocketOpenSSL::send(char* buf, size_t nbyte)
     {
-        ssize_t sent = 0;
+        std::lock_guard<std::mutex> lock(_mutex);
 
-        while (nbyte > 0)
+        if (_ssl_connection == nullptr || _ssl_context == nullptr)
         {
-            std::lock_guard<std::mutex> lock(_mutex);
-
-            if (_ssl_connection == nullptr || _ssl_context == nullptr)
-            {
-                return 0;
-            }
-
-            ERR_clear_error();
-            ssize_t write_result = SSL_write(_ssl_connection, buf + sent, (int) nbyte);
-            int reason = SSL_get_error(_ssl_connection, (int) write_result);
-
-            if (reason == SSL_ERROR_NONE)
-            {
-                nbyte -= write_result;
-                sent += write_result;
-            }
-            else if (reason == SSL_ERROR_WANT_READ || reason == SSL_ERROR_WANT_WRITE)
-            {
-                errno = EWOULDBLOCK;
-                return -1;
-            }
-            else
-            {
-                return -1;
-            }
+            return 0;
         }
-        return sent;
-    }
 
-    ssize_t SocketOpenSSL::send(const std::string& buffer)
-    {
-        return send((char*) &buffer[0], buffer.size());
+        ERR_clear_error();
+        ssize_t write_result = SSL_write(_ssl_connection, buf, (int) nbyte);
+        int reason = SSL_get_error(_ssl_connection, (int) write_result);
+
+        if (reason == SSL_ERROR_NONE)
+        {
+            return write_result;
+        }
+        else if (reason == SSL_ERROR_WANT_READ || reason == SSL_ERROR_WANT_WRITE)
+        {
+            errno = EWOULDBLOCK;
+            return -1;
+        }
+        else
+        {
+            return -1;
+        }
     }
 
     ssize_t SocketOpenSSL::recv(void* buf, size_t nbyte)
