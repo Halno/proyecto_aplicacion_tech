@@ -8,10 +8,15 @@
 #include "usuario.h"
 #include "conexionusuarios.h"
 #include <QString>
+#include <QDebug>
 using JSON = nlohmann::json;
 
 int g_idMensaje = 0;
 bool logeado = false;
+
+/**
+* Método constructor de la clase Servidor.
+*/
 
 Servidor::Servidor()
 {
@@ -19,6 +24,10 @@ Servidor::Servidor()
 }
 
 
+/**
+* Calcula el ID de los mensajes que enviará a los clientes
+* a través del websocket y lo devuelve.
+*/
 
 int autocalcularIdServidor()
 {
@@ -26,14 +35,18 @@ int autocalcularIdServidor()
     return g_idMensaje;
 }
 
+/**
+* Comprueba que el JSON recibido contiene el campo indicado
+*/
+
 bool exists(const JSON& json, const std::string& key)
 {
     return json.find(key) != json.end();
 }
 
 
-///Para probar, emplear la función "enviarLogin()" desde el navegador. Si usuario y contraseña no coinciden,
-/// el socket devuelve error. Solo podemos iniciar sesión si no lo hemos hecho antes.
+///Para probar, emplear la función "enviarLogin()" desde el cliente. Si usuario y contraseña no coinciden,
+/// el websocket devuelve error. Solo podemos iniciar sesión si no lo hemos hecho antes.
 
 
 JSON login(JSON receivedObject)
@@ -189,6 +202,9 @@ int Servidor::iniciarServidor()
 
     server.setTLSOptions(tlsOptions);
 
+    qDebug() << QObject::tr("Bienvenido.");
+
+
     server.setOnConnectionCallback(
         [&server](std::shared_ptr<ix::WebSocket> webSocket,
                   std::shared_ptr<ix::ConnectionState> connectionState)
@@ -198,19 +214,19 @@ int Servidor::iniciarServidor()
                 {
                     if (msg->type == ix::WebSocketMessageType::Open)
                     {
-                        std::cout << "New connection" << std::endl;
+                        qDebug() << QObject::tr("Nueva conexion");
 
                     }
                     else if (msg->type == ix::WebSocketMessageType::Close)
                     {
-                        std::cout << "Bye bye connection" << std::endl;
+                        qDebug() << QObject::tr("Conexion cerrada");
                     }
                     else if (msg->type == ix::WebSocketMessageType::Message)
                     {
                         if (!msg->binary)
                         {
                             /// Text format
-                            std::cout << "Received message: " << msg->str << std::endl;
+                            qDebug() << QObject::tr("Mensaje recibido:");
                         }
 
 
@@ -218,7 +234,7 @@ int Servidor::iniciarServidor()
 
                         if (receivedObject.is_discarded())
                         {
-                            std::cout << "error" << std::endl;
+                            qDebug() << QObject::tr("Error");
                         }
                         else
                         {
@@ -263,7 +279,7 @@ int Servidor::iniciarServidor()
                                 }
                                 else
                                 {
-                                    std::cout << "error no hay tipo" << std::endl;
+                                    qDebug() << QObject::tr("Error: falta tipo en el mensaje.");
                                 }
                         }
                     }

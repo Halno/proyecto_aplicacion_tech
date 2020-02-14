@@ -134,7 +134,7 @@ bool Usuario::comprobarContrasenya()
           qDebug() << orden.lastError().text();
     } // end if
 
-    qDebug() << ((result) ? "existe" : "no existe");
+    qDebug() << ((result) ? QObject::tr("Existe") : QObject::tr("No existe"));
 
     return result;
 }
@@ -156,17 +156,6 @@ bool Usuario::loginAndLogout()
     }
 }
 
-bool Usuario::logout()
-{
-    //Se llama a esta función cuando un usuario intenta cerrar sesión.
-
-    //1. La función comprueba que el usuario, efectivamente, está logeado.
-
-    //2. Si no lo está, se le indica que no puede cerrar sesión si previamente
-    //   no la ha iniciado. (Devuelve false).
-
-    //3. Si se encontraba logeado, el usuario cierra sesión. (Devuelve true).
-}
 
 /*
 bool Usuario::nuevaEntrada()

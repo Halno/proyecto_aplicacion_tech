@@ -91,21 +91,14 @@ socket.onerror = function(error)
   alert(`[error] ${error.message}`);
 };
 
-function trigger()
-{
-    var id_mensaje = autocalcularId();
-    var id_tarjeta = 4360;
-
-    var mensajeJson = {tipo: "trigger", id: id_mensaje}
-    socket.send( JSON.stringify(mensajeJson));
-};
 
 
 function enviarLogin()
 {
     var id_mensaje = autocalcularId();
-    var nombre_Usuario = document.getElementById(id_usuario);
-    var contrasenya = document.getElementById(pass);
+    var nombre_Usuario = document.getElementById("id_usuario").value.toString();
+    var contrasenya = document.getElementById("pass").value.toString();
+    document.getElementById("login").style.display="none";
 
     var mensajeJson = {tipo: "login", id: id_mensaje, usuario: nombre_Usuario, contrasenya_Usuario: contrasenya}
     socket.send( JSON.stringify(mensajeJson));
@@ -122,32 +115,17 @@ function enviarLogout(nombre, password)
 };
 
 
-function enviarRegistro(nombre, password)
+function enviarRegistro()
 {
     var id_mensaje = autocalcularId();
-    var nombre_Usuario = nombre;
-    var contrasenya = password;
-
+    var nombre_Usuario = document.getElementById("id_usuario").value.toString();
+    var contrasenya = document.getElementById("pass").value.toString();
+    document.getElementById("login").style.display="none";
+    
     var mensajeJson = {tipo: "registro", id: id_mensaje, usuario: nombre_Usuario, contrasenya_Usuario: contrasenya}
     socket.send( JSON.stringify(mensajeJson));
 };
 
-function matchmaking()
-{
-    var id_mensaje = autocalcularId();
-
-    var mensajeJson = {tipo: "matchmaking", id: id_mensaje}
-    socket.send( JSON.stringify(mensajeJson));
-}
-
-function mensajeChat()
-{
-    var id_mensaje = autocalcularId();
-    var mensaje = "mensaje";
-
-    var mensajeJson = {tipo: "mensajeChat", id: id_mensaje, chat: mensaje}
-    socket.send( JSON.stringify(mensajeJson));
-}
 
 
 function autocalcularId()
@@ -158,22 +136,26 @@ function autocalcularId()
 </script>
 </head>
 <body>
- <form action="#" method="post">
 
-  <div class="container">
+<!--Div de login-->
+
+<div id ="login" class="container" style="display:block">
+
     <label for="nombreUsuario"><b>Nombre de usuario</b></label>
     <input id="id_usuario" type="text" placeholder="Introduce tu nombre de usuario" name="nombreUsuario" required>
-
+    
     <label for="contrasenya"><b>Contraseña</b></label>
     <input id="pass" type="password" placeholder="Introduce tu contraseña" name="contrasenya" required>
+    
+    <button onclick= "enviarLogin()">Iniciar sesión</button>
+    <br/>
+    <p> ¿No tienes cuenta? En ese caso, rellena el formulario y haz un click aquí </p>
+    <button onclick="enviarRegistro()">Registrarse</button>
+    
+</div>
 
-    <button onclick=enviarLogin()  type="submit">Login</button>
-    <label>
-  </div>
-
-</form> 
-
-
+<!--Fin div de login-->
+    
 <div id="received_messages">
 </div>
 

@@ -5,6 +5,9 @@ QT += sql
 TARGET = tech
 TEMPLATE = app
 
+TRANSLATIONS+= traductor_es_ES.ts
+TRANSLATIONS+= traductor_en_US.ts
+
 CONFIG += c++11 console
 CONFIG -= app_bundle
 
