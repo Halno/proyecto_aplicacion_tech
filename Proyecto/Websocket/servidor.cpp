@@ -12,7 +12,6 @@
 using JSON = nlohmann::json;
 
 int g_idMensaje = 0;
-bool logeado = false;
 
 /**
 * Método constructor de la clase Servidor.
@@ -47,6 +46,15 @@ bool exists(const JSON& json, const std::string& key)
 
 ///Para probar, emplear la función "enviarLogin()" desde el cliente. Si usuario y contraseña no coinciden,
 /// el websocket devuelve error. Solo podemos iniciar sesión si no lo hemos hecho antes.
+///
+///
+
+/**
+* Construye y envía el JSON de respuesta cuando se realiza una petición de login.
+* Comprueba que exista el usuario con la contraseña y nombre indicados en la petición.
+* Si existe, el usuario inicia sesión.
+* De lo contrario, se le informa de que se ha equivocado al introducir sus credenciales.
+*/
 
 
 JSON login(JSON receivedObject)
@@ -56,6 +64,7 @@ JSON login(JSON receivedObject)
     respuesta["idServidor"] = autocalcularIdServidor();
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["Error"] = 0;
+    respuesta["tipo_respuesta"]="respuesta_login";
 
     std::string nombre=receivedObject["usuario"];
     QString nombreUsuario = QString::fromUtf8(nombre.c_str());
@@ -73,17 +82,7 @@ JSON login(JSON receivedObject)
     }
     else
     {
-        if (logeado)
-        {
-            respuesta["mensaje"]= "Ya has iniciado sesión.";
-        }
-        else
-        {
-            user.loginAndLogout();
-            respuesta["mensaje"] = "Has iniciado sesión con éxito";
-            logeado=true;
-        }
-
+        user.loginAndLogout();
     }
 
     return respuesta;
@@ -99,6 +98,7 @@ JSON logout(JSON receivedObject)
     respuesta["idServidor"] = autocalcularIdServidor();
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["Error"] = 0;
+    respuesta["tipo_respuesta"]="respuesta_logout";
 
     std::string nombre=receivedObject["usuario"];
     QString nombreUsuario = QString::fromUtf8(nombre.c_str());
@@ -108,14 +108,14 @@ JSON logout(JSON receivedObject)
 
     Usuario user(nombreUsuario, passwordUsuario);
 
-        if (logeado)
+        if (user.comprobarContrasenya())
         {
             user.loginAndLogout();
             respuesta["mensaje"]= "Has salido.";
-            logeado=false;
         }
         else
         {
+            respuesta["Error"] = 1;
             respuesta["mensaje"] = "Aún no has iniciado sesión";
         }
 
@@ -144,7 +144,7 @@ JSON registro(JSON receivedObject)
 
     if (user.registro(nombreUsuario))
     {
-        respuesta["Error"]= 1;
+        respuesta["Error"]= 2;
         respuesta["mensajeError"]= "Nombre de usuario en uso. Elige otro.";
     }
     else
@@ -242,6 +242,7 @@ int Servidor::iniciarServidor()
                                 if (exists(receivedObject, "tipo"))
                                 {
                                     std::string tipo = receivedObject["tipo"];
+
 
                                     if (tipo=="login")
                                     {

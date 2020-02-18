@@ -3,12 +3,46 @@
 <head>
 <style>
  /* Bordered form */
-form {
+form 
+{
   border: 3px solid #f1f1f1;
 }
 
+ul 
+{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li 
+{
+  float: right;
+}
+
+li a 
+{
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  
+}
+
+li a:hover 
+{
+  background-color: #555;
+  color: white;
+}
+
+
+
 /* Full-width inputs */
-input[type=text], input[type=password] {
+input[type=text], input[type=password] 
+{
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -18,7 +52,8 @@ input[type=text], input[type=password] {
 }
 
 /* Set a style for all buttons */
-button {
+button 
+{
   background-color: #4CAF50;
   color: white;
   padding: 14px 20px;
@@ -29,18 +64,21 @@ button {
 }
 
 /* Add a hover effect for buttons */
-button:hover {
+button:hover 
+{
   opacity: 0.8;
 }
 
 
 /* Add padding to containers */
-.container {
+.container 
+{
   padding: 16px;
 }
 
 /* Change styles for span and cancel button on extra small screens */
-@media screen and (max-width: 300px) {
+@media screen and (max-width: 300px) 
+{
   span.psw {
     display: block;
     float: none;
@@ -51,23 +89,58 @@ button:hover {
 } 
 </style>
 <script>
+
+var g_idMensaje = 0;
+var usuario;
+var pass;
+
 let socket = new WebSocket("wss://localhost:9990");
 
-socket.onopen = function(e) {
+socket.onopen = function(e) 
+{
   alert("[open] Connection established");
   alert("Sending to server");
   console.log("Conexion abierta");
 };
 
-var g_idMensaje = 0;
+
 
 
 socket.onmessage = function(event)
 {
-  alert(`[message] Data received from server: ${event.data}`);
-  
+
   console.log(event.data);
   var object = JSON.parse(event.data);
+  
+  if (object["tipo_respuesta"]=="respuesta_login")
+  {
+    if (object["Error"]==0)
+    {
+        document.getElementById("login").style.display="none";
+        document.getElementById("nav_bar").style.display="block";
+        document.getElementById("main_page").style.display="block";
+    }
+    else
+    {
+        alert(`[message] Data received from server: ${event.data}`);
+    }
+  }
+  
+  if (object["tipo_respuesta"]=="respuesta_logout")
+  {
+    if (object["Error"]==0)
+    {
+        document.getElementById("login").style.display="block";
+        document.getElementById("nav_bar").style.display="none";
+        document.getElementById("main_page").style.display="none";
+    }
+    else
+    {
+        alert(`[message] Data received from server: ${event.data}`);
+    }
+  }
+  
+  
   
   //document.getElementById("received_messages").innerHTML += "<div>" + object.message + "</div>";
   
@@ -98,17 +171,19 @@ function enviarLogin()
     var id_mensaje = autocalcularId();
     var nombre_Usuario = document.getElementById("id_usuario").value.toString();
     var contrasenya = document.getElementById("pass").value.toString();
-    document.getElementById("login").style.display="none";
+    
+    usuario=nombre_Usuario;
+    pass=contrasenya;
 
     var mensajeJson = {tipo: "login", id: id_mensaje, usuario: nombre_Usuario, contrasenya_Usuario: contrasenya}
     socket.send( JSON.stringify(mensajeJson));
 };
 
-function enviarLogout(nombre, password)
+function enviarLogout()
 {
     var id_mensaje = autocalcularId();
-    var nombre_Usuario = nombre;
-    var contrasenya = password;
+    var nombre_Usuario = usuario;
+    var contrasenya = pass;
 
     var mensajeJson = {tipo: "logout", id: id_mensaje, usuario: nombre_Usuario, contrasenya_Usuario: contrasenya}
     socket.send( JSON.stringify(mensajeJson));
@@ -120,7 +195,6 @@ function enviarRegistro()
     var id_mensaje = autocalcularId();
     var nombre_Usuario = document.getElementById("id_usuario").value.toString();
     var contrasenya = document.getElementById("pass").value.toString();
-    document.getElementById("login").style.display="none";
     
     var mensajeJson = {tipo: "registro", id: id_mensaje, usuario: nombre_Usuario, contrasenya_Usuario: contrasenya}
     socket.send( JSON.stringify(mensajeJson));
@@ -136,6 +210,20 @@ function autocalcularId()
 </script>
 </head>
 <body>
+
+<!--Div barra de navegación-->
+
+<div id="nav_bar" class="container" style="display:none">
+
+    <ul>
+    <li><a onclick= "enviarLogout()" href= "#" >Cerrar sesión</a></li>
+    </ul>
+    
+</div>
+
+<!--Fin Div barra de navegación-->
+
+</br>
 
 <!--Div de login-->
 
@@ -154,7 +242,18 @@ function autocalcularId()
     
 </div>
 
+
 <!--Fin div de login-->
+
+<!--Div de Página principal-->
+
+<div id="main_page" class="container" style="display:none">
+
+    <h3> PÁGINA PRINCIPAL </h3>
+    
+</div>
+
+<!--Fin div de página principal-->
     
 <div id="received_messages">
 </div>
