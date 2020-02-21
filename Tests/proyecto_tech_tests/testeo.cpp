@@ -15,7 +15,7 @@ Testeo::Testeo(QObject *parent) : QObject(parent)
 }
 
 
-void Testeo::bucle()
+void Testeo::run()
 {
     qDebug() << "Iniciando...";
 
@@ -35,31 +35,34 @@ BaseDatos::~BaseDatos()
     } // end if
 }
 
-bool BaseDatos::insertar()
+bool BaseDatos::insertar(QString nombre, QString pass)
 {
+
     QSqlQuery query(m_db);
-    query.prepare("INSERT INTO tabla (nombre_tabla) VALUES (:nombre_tabla)");
-    query.bindValue(":nombre_tabla", "prueba");
+    query.prepare("INSERT INTO usuarios (nombre_usuario, password_usuario) VALUES (:nombre_Usuario, :passwordUsuario)");
+    query.bindValue(":nombre_Usuario", nombre);
+    query.bindValue(":passwordUsuario", pass);
+
     bool result = query.exec();
-qDebug() << query.lastError().text();
+    qDebug() << query.lastError().text();
     return result;
+
 }
 
 BaseDatos::BaseDatos()
 {
-    if (!QSqlDatabase::contains( "MyDb"))
+    if (!QSqlDatabase::contains("MyDb"))
     {
         m_db = QSqlDatabase::addDatabase("QPSQL", "MyDb");
     }
     else
     {
         m_db = QSqlDatabase::database("MyDb");
-    } // end if
+    }
     m_db.setHostName("localhost");
     m_db.setPort(5432);
     m_db.setUserName("postgres");
     m_db.setPassword("");
-
 }
 
 void BaseDatos::cerrar()
@@ -96,10 +99,10 @@ bool BaseDatos::iniciar()
                     id_usuario     SERIAL, \
                     nombre_usuario    varchar(20), \
                     password_usuario    varchar(30), \
-                    bloqueado    boolean, \
-                    sesion_iniciada boolean, \
                     PRIMARY KEY(id_usuario) \
                 )"};
+
+
 
                 qDebug() << "Iniciando...";
                 QSqlQuery q2(sql, m_db);
@@ -121,6 +124,7 @@ bool BaseDatos::iniciar()
 
     } // end if
 
+
     return result;
 }
 
@@ -140,32 +144,6 @@ bool exists(const JSON& json, const std::string& key)
     return json.find(key) != json.end();
 }
 
-TEST_CASE("base datos #0")
-{
-    BaseDatos db;
-    int ok = db.iniciar();
-
-    if (ok)
-    {
-        qDebug() << "DB UP AND RUNNING";
-
-        SUBCASE("Insertar #0")
-        {
-            CHECK( db.insertar() == true );
-        }
-
-        SUBCASE("Insertar #0")
-        {
-            CHECK( db.insertar() == true );
-        }
-    }
-    else
-    {
-        qDebug() << db.ultimoError().text();
-
-    } // end if
-
-}
 
 TEST_CASE("Test autocalcularIdServidor()")
 {
@@ -174,14 +152,34 @@ TEST_CASE("Test autocalcularIdServidor()")
 
 TEST_CASE("Test clase Usuario")
 {
-    QString nombre, contrasenya;
-    nombre="NombreDeEjemplo";
-    contrasenya="PasswordDeEjemplo";
+    BaseDatos db;
+    int ok = db.iniciar();
 
-    Usuario user(nombre, contrasenya);
+    if (ok)
+    {
+        QString nombre, contrasenya;
+        nombre="NombreDeEjemplo";
+        contrasenya="PasswordDeEjemplo";
 
-    CHECK( user.m_nombreUsuario == "NombreDeEjemplo" );
-    CHECK( user.m_passwordUsuario == "PasswordDeEjemplo");
+        Usuario user(nombre, contrasenya);
+
+        CHECK( user.m_nombreUsuario == "NombreDeEjemplo" );
+        CHECK( user.m_passwordUsuario == "PasswordDeEjemplo");
+        qDebug () << user.m_nombreUsuario;
+        qDebug () << user.m_passwordUsuario;
+
+        SUBCASE("Insertar usuario")
+        {
+            CHECK(db.insertar(user.m_nombreUsuario, user.m_passwordUsuario) == true);
+        }
+
+    }
+    else
+    {
+        qDebug() << db.ultimoError().text();
+    }
+
+     db.cerrar();
 }
 
 TEST_CASE("Funcion exists()")

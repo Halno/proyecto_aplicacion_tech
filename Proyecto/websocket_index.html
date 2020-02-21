@@ -91,7 +91,7 @@ button:hover
 <script>
 
 var g_idMensaje = 0;
-var usuario;
+var nom_usuario;
 var pass;
 
 let socket = new WebSocket("wss://localhost:9990");
@@ -172,7 +172,7 @@ function enviarLogin()
     var nombre_Usuario = document.getElementById("id_usuario").value.toString();
     var contrasenya = document.getElementById("pass").value.toString();
     
-    usuario=nombre_Usuario;
+    nom_usuario=nombre_Usuario;
     pass=contrasenya;
 
     var mensajeJson = {tipo: "login", id: id_mensaje, usuario: nombre_Usuario, contrasenya_Usuario: contrasenya}
@@ -182,7 +182,7 @@ function enviarLogin()
 function enviarLogout()
 {
     var id_mensaje = autocalcularId();
-    var nombre_Usuario = usuario;
+    var nombre_Usuario = nom_usuario;
     var contrasenya = pass;
 
     var mensajeJson = {tipo: "logout", id: id_mensaje, usuario: nombre_Usuario, contrasenya_Usuario: contrasenya}
@@ -200,6 +200,16 @@ function enviarRegistro()
     socket.send( JSON.stringify(mensajeJson));
 };
 
+function personaje()
+{
+    var id_mensaje = autocalcularId();
+    var nombre_Usuario = nom_usuario;
+    var contrasenya = pass;
+    var personaje = document.getElementById("pj").value.toString();
+    
+    var mensajeJson = {tipo: "consultarSeccion", id: id_mensaje, usuario: nom_usuario, seccion: personaje}
+    socket.send(JSON.stringify(mensajeJson));
+};
 
 
 function autocalcularId()
@@ -250,7 +260,17 @@ function autocalcularId()
 <div id="main_page" class="container" style="display:none">
 
     <h3> PÁGINA PRINCIPAL </h3>
-    
+        <label for="pj">Escoge un personaje:</label>
+
+        <select id="pj">
+        <option value="ryu">Ryu</option>
+        <option value="ken">Ken</option>
+        <option value="sagat">Sagat</option>
+        <option value="cammy">Cammy</option>
+        
+        </select> 
+        
+        <button onclick="personaje()"> Buscar tech </button>
 </div>
 
 <!--Fin div de página principal-->

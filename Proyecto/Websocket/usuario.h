@@ -31,7 +31,7 @@ public:
     bool comprobarContrasenya();
 
 
-    bool registro(QString nombre);
+    bool registro();
     bool loginAndLogout();
     bool logout();
     bool nuevaEntrada(JSON receivedObject);

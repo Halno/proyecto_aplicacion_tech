@@ -11,7 +11,7 @@
 #include <QDebug>
 using JSON = nlohmann::json;
 
-int g_idMensaje = 0;
+    static int g_idMensaje;
 
 /**
 * Método constructor de la clase Servidor.
@@ -28,7 +28,7 @@ Servidor::Servidor()
 * a través del websocket y lo devuelve.
 */
 
-int autocalcularIdServidor()
+int Servidor::autocalcularIdServidor()
 {
     g_idMensaje++;
     return g_idMensaje;
@@ -38,16 +38,11 @@ int autocalcularIdServidor()
 * Comprueba que el JSON recibido contiene el campo indicado
 */
 
-bool exists(const JSON& json, const std::string& key)
+bool Servidor::exists(const JSON& json, const std::string& key)
 {
     return json.find(key) != json.end();
 }
 
-
-///Para probar, emplear la función "enviarLogin()" desde el cliente. Si usuario y contraseña no coinciden,
-/// el websocket devuelve error. Solo podemos iniciar sesión si no lo hemos hecho antes.
-///
-///
 
 /**
 * Construye y envía el JSON de respuesta cuando se realiza una petición de login.
@@ -57,7 +52,7 @@ bool exists(const JSON& json, const std::string& key)
 */
 
 
-JSON login(JSON receivedObject)
+JSON Servidor::login(JSON receivedObject)
 {
     JSON respuesta;
 
@@ -88,10 +83,15 @@ JSON login(JSON receivedObject)
     return respuesta;
 }
 
-///Para probar, emplear la función "enviarLogout()" desde el navegador. Solo podemos
-/// cerrar sesión si ya la habíamos iniciado previamente.
 
-JSON logout(JSON receivedObject)
+/**
+* Construye y envía el JSON de respuesta cuando se realiza una petición de logout.
+* Comprueba que exista el usuario con la contraseña y nombre indicados en la petición.
+* Si existe, el usuario cierra sesión.
+* De lo contrario, se muestra un mensaje de error.
+*/
+
+JSON Servidor::logout(JSON receivedObject)
 {
     JSON respuesta;
 
@@ -116,17 +116,22 @@ JSON logout(JSON receivedObject)
         else
         {
             respuesta["Error"] = 1;
-            respuesta["mensaje"] = "Aún no has iniciado sesión";
+            respuesta["mensaje"] = "Error al cerrar sesión";
         }
 
 
     return respuesta;
 }
 
-///Para probar, emplear la función "enviarRegistro()" desde el navegador. Solo podemos
-///registrarnos si el nombre de usuario no se encuentra en uso. Por defecto, "HHH" está en uso.
 
-JSON registro(JSON receivedObject)
+/**
+* Construye y envía el JSON de respuesta cuando se realiza una petición de registro.
+* Comprueba que no exista otro usuario con el nombre que se ha insertado.
+* Si no existe, se registra a este nuevo usuario en la base de datos.
+* De lo contrario, se le informa de que ese nombre de usuario ya existe, y que elija otro.
+*/
+
+JSON Servidor::registro(JSON receivedObject)
 {
     JSON respuesta;
 
@@ -142,13 +147,13 @@ JSON registro(JSON receivedObject)
 
     Usuario user(nombreUsuario, passwordUsuario);
 
-    if (user.registro(nombreUsuario))
+    if (user.registro())
     {
         respuesta["Error"]= 2;
         respuesta["mensajeError"]= "Nombre de usuario en uso. Elige otro.";
     }
     else
-    {        
+    {
         user.insert();
         respuesta["mensaje"] = "Has completado el registro con éxito";
     }
@@ -156,7 +161,7 @@ JSON registro(JSON receivedObject)
     return respuesta;
 }
 
-JSON crearEntrada(JSON receivedObject)
+JSON Servidor::crearEntrada(JSON receivedObject)
 {
     JSON respuesta;
 
@@ -171,7 +176,7 @@ JSON crearEntrada(JSON receivedObject)
 
 }
 
-JSON consultarSeccion(JSON receivedObject)
+JSON Servidor::consultarSeccion(JSON receivedObject)
 {
     JSON respuesta;
 
@@ -183,6 +188,16 @@ JSON consultarSeccion(JSON receivedObject)
 
 }
 
+/**
+* Inicia el servidor websocket.
+* El Websocket recibe los mensajes que envía el cliente, y en función del tipo
+* de mensaje indicado en el JSON accederá a la función que corresponda que se
+* encargará de generar el mensaje de respuesta de JSON. A continuación, el
+* mensaje se envía.
+*
+* Además de responder al mensaje, el servidor interactúa con la base de datos
+* en función de los mensajes que recibe.
+*/
 
 int Servidor::iniciarServidor()
 {
@@ -206,11 +221,11 @@ int Servidor::iniciarServidor()
 
 
     server.setOnConnectionCallback(
-        [&server](std::shared_ptr<ix::WebSocket> webSocket,
+        [&server, this](std::shared_ptr<ix::WebSocket> webSocket,
                   std::shared_ptr<ix::ConnectionState> connectionState)
         {
             webSocket->setOnMessageCallback(
-                [webSocket, connectionState, &server](const ix::WebSocketMessagePtr msg)
+                [webSocket, connectionState, &server, this](const ix::WebSocketMessagePtr msg)
                 {
                     if (msg->type == ix::WebSocketMessageType::Open)
                     {

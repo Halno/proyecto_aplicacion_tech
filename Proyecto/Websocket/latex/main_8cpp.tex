@@ -1,0 +1,44 @@
+\hypertarget{main_8cpp}{}\section{main.\+cpp File Reference}
+\label{main_8cpp}\index{main.\+cpp@{main.\+cpp}}
+{\ttfamily \#include $<$Q\+Core\+Application$>$}\newline
+{\ttfamily \#include \char`\"{}json.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include \char`\"{}../../\+I\+X\+Web\+Socket/ixwebsocket/\+I\+X\+Web\+Socket\+Server.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../../\+I\+X\+Web\+Socket/ixwebsocket/\+I\+X\+Web\+Socket.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../../\+I\+X\+Web\+Socket/ixwebsocket/\+I\+X\+Connection\+State.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}usuario.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}servidor.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$Q\+String$>$}\newline
+{\ttfamily \#include $<$Q\+Json\+Document$>$}\newline
+{\ttfamily \#include $<$Q\+Json\+Value$>$}\newline
+{\ttfamily \#include $<$Q\+Debug$>$}\newline
+{\ttfamily \#include $<$Q\+Json\+Object$>$}\newline
+{\ttfamily \#include $<$Q\+Json\+Array$>$}\newline
+{\ttfamily \#include $<$Q\+Sql\+Database$>$}\newline
+{\ttfamily \#include $<$Q\+Translator$>$}\newline
+{\ttfamily \#include \char`\"{}Q\+Sql\+Error\char`\"{}}\newline
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{main_8cpp_ab6104b89642419db4e355b7b2e40abbe}\label{main_8cpp_ab6104b89642419db4e355b7b2e40abbe}} 
+using {\bfseries J\+S\+ON} = \mbox{\hyperlink{namespacenlohmann_a2bfd99e845a2e5cd90aeaf1b1431f474}{nlohmann\+::json}}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{main_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main}} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{main_8cpp_a0ddf1224851353fc92bfbff6f499fa97}\label{main_8cpp_a0ddf1224851353fc92bfbff6f499fa97}} 
+\index{main.\+cpp@{main.\+cpp}!main@{main}}
+\index{main@{main}!main.\+cpp@{main.\+cpp}}
+\subsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+Función principal del programa. Implementación de soporte para traducciones.
+
+Conexión con la base de datos.
+
+Se crea instancia de la clase servidor, y se llama a la función para iniciarlo.

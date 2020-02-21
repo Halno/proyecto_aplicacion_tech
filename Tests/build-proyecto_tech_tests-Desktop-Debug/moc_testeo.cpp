@@ -22,7 +22,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Testeo_t {
     QByteArrayData data[3];
-    char stringdata0[14];
+    char stringdata0[12];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -32,11 +32,11 @@ struct qt_meta_stringdata_Testeo_t {
 static const qt_meta_stringdata_Testeo_t qt_meta_stringdata_Testeo = {
     {
 QT_MOC_LITERAL(0, 0, 6), // "Testeo"
-QT_MOC_LITERAL(1, 7, 5), // "bucle"
-QT_MOC_LITERAL(2, 13, 0) // ""
+QT_MOC_LITERAL(1, 7, 3), // "run"
+QT_MOC_LITERAL(2, 11, 0) // ""
 
     },
-    "Testeo\0bucle\0"
+    "Testeo\0run\0"
 };
 #undef QT_MOC_LITERAL
 
@@ -68,7 +68,7 @@ void Testeo::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         Testeo *_t = static_cast<Testeo *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->bucle(); break;
+        case 0: _t->run(); break;
         default: ;
         }
     }

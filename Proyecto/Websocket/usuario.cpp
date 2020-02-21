@@ -94,12 +94,12 @@ bool Usuario::remove()
     return result;
 }
 
-bool Usuario::registro(QString nombre)
+bool Usuario::registro()
 {
     bool result = false;
     QSqlQuery orden;
     orden.prepare("SELECT * FROM usuario WHERE nombre_usuario = :nombre_usuario LIMIT 1");
-    orden.bindValue(":nombre_usuario", nombre);
+    orden.bindValue(":nombre_usuario", m_nombreUsuario);
 
     if (orden.exec())
     {

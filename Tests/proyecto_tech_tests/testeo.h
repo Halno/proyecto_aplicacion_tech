@@ -17,7 +17,7 @@ public:
     bool iniciar();
     void cerrar();
     QSqlError ultimoError();
-    bool insertar();
+    bool insertar(QString nombre, QString pass);
 };
 
 
@@ -33,7 +33,7 @@ public:
 
 public slots:
 
-   void bucle();
+   void run();
 };
 
 #endif // TESTEO_H
