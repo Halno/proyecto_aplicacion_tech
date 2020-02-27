@@ -3,24 +3,85 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{classEntrada_a1b4cadcad1ba9665c73b3515eaad16cc}\label{classEntrada_a1b4cadcad1ba9665c73b3515eaad16cc}} 
-void {\bfseries load} (int id)
+\mbox{\hyperlink{classEntrada_a318ba6d0848d21cd2cf37d8dd3a4399e}{Entrada}} ()
+\item 
+\mbox{\hyperlink{classEntrada_acf29eef7e8989a95a2dbd34a0845893c}{Entrada}} (int id\+Usuario\+Entrada, Q\+String contenido\+Entrada, Q\+String personaje\+Entrada)
+\item 
+void \mbox{\hyperlink{classEntrada_a1b4cadcad1ba9665c73b3515eaad16cc}{load}} (int id)
 \item 
 bool \mbox{\hyperlink{classEntrada_af6ef4854f5d9040117278ffe65eac8a3}{insert}} ()
 \item 
-\mbox{\Hypertarget{classEntrada_a352b5c6fad6fe043a06625c995b78e32}\label{classEntrada_a352b5c6fad6fe043a06625c995b78e32}} 
-bool {\bfseries remove} ()
+bool \mbox{\hyperlink{classEntrada_a352b5c6fad6fe043a06625c995b78e32}{remove}} ()
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} \mbox{\hyperlink{classEntrada_ab9b65851bf7c933598f980c00106bf1e}{cargar\+Entradas}} (Q\+String personaje, \mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} respuesta)
 \end{DoxyCompactItemize}
 
 
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classEntrada_a318ba6d0848d21cd2cf37d8dd3a4399e}\label{classEntrada_a318ba6d0848d21cd2cf37d8dd3a4399e}} 
+\index{Entrada@{Entrada}!Entrada@{Entrada}}
+\index{Entrada@{Entrada}!Entrada@{Entrada}}
+\subsubsection{\texorpdfstring{Entrada()}{Entrada()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Entrada\+::\+Entrada (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Método constructor de la clase \mbox{\hyperlink{classEntrada}{Entrada}}. \mbox{\Hypertarget{classEntrada_acf29eef7e8989a95a2dbd34a0845893c}\label{classEntrada_acf29eef7e8989a95a2dbd34a0845893c}} 
+\index{Entrada@{Entrada}!Entrada@{Entrada}}
+\index{Entrada@{Entrada}!Entrada@{Entrada}}
+\subsubsection{\texorpdfstring{Entrada()}{Entrada()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Entrada\+::\+Entrada (\begin{DoxyParamCaption}\item[{int}]{id\+\_\+usuario,  }\item[{Q\+String}]{contenido,  }\item[{Q\+String}]{personaje }\end{DoxyParamCaption})}
+
+Método constructor de la clase \mbox{\hyperlink{classEntrada}{Entrada}}. Los parámetros se usan para cambiar las variables del objeto. 
+\begin{DoxyParams}{Parameters}
+{\em id\+\_\+usuario} & El ID del usuario que ha realizado la entrada. \\
+\hline
+{\em contenido} & El contenido de la entrada. \\
+\hline
+{\em personaje} & El personaje al que pertenece la entrada. \\
+\hline
+\end{DoxyParams}
+
+
 \subsection{Member Function Documentation}
+\mbox{\Hypertarget{classEntrada_ab9b65851bf7c933598f980c00106bf1e}\label{classEntrada_ab9b65851bf7c933598f980c00106bf1e}} 
+\index{Entrada@{Entrada}!cargar\+Entradas@{cargar\+Entradas}}
+\index{cargar\+Entradas@{cargar\+Entradas}!Entrada@{Entrada}}
+\subsubsection{\texorpdfstring{cargar\+Entradas()}{cargarEntradas()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} Entrada\+::cargar\+Entradas (\begin{DoxyParamCaption}\item[{Q\+String}]{personaje,  }\item[{\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}}}]{respuesta }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Busca todas las entradas de un personaje y las carga en un J\+S\+ON. 
+\begin{DoxyParams}{Parameters}
+{\em personaje} & Personaje del que se quieren buscar las entradas. \\
+\hline
+{\em respuesta} & J\+S\+ON sobre el que se van a añadir todas las entradas. También es el J\+S\+ON que devuelve la función tras cargar las entradas. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classEntrada_af6ef4854f5d9040117278ffe65eac8a3}\label{classEntrada_af6ef4854f5d9040117278ffe65eac8a3}} 
 \index{Entrada@{Entrada}!insert@{insert}}
 \index{insert@{insert}!Entrada@{Entrada}}
 \subsubsection{\texorpdfstring{insert()}{insert()}}
 {\footnotesize\ttfamily bool Entrada\+::insert (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-I\+N\+S\+E\+RT 
+Inserta la entrada en la base de datos. \mbox{\Hypertarget{classEntrada_a1b4cadcad1ba9665c73b3515eaad16cc}\label{classEntrada_a1b4cadcad1ba9665c73b3515eaad16cc}} 
+\index{Entrada@{Entrada}!load@{load}}
+\index{load@{load}!Entrada@{Entrada}}
+\subsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily void Entrada\+::load (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})}
+
+Realiza una búsqueda en la base de datos según el ID de la entrada. Carga los datos de la entrada encontrada en el objeto. 
+\begin{DoxyParams}{Parameters}
+{\em id} & Es el ID de la entrada que se desea buscar. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classEntrada_a352b5c6fad6fe043a06625c995b78e32}\label{classEntrada_a352b5c6fad6fe043a06625c995b78e32}} 
+\index{Entrada@{Entrada}!remove@{remove}}
+\index{remove@{remove}!Entrada@{Entrada}}
+\subsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily bool Entrada\+::remove (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Elimina la entrada de la base de datos. 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 

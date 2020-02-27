@@ -7,8 +7,19 @@
 \item 
 int \mbox{\hyperlink{classServidor_a2a7fdca08064f9e567c579a2cb34f267}{iniciar\+Servidor}} ()
 \item 
-\mbox{\Hypertarget{classServidor_a292f87f595ed2afd654abe3cc5ba8dc0}\label{classServidor_a292f87f595ed2afd654abe3cc5ba8dc0}} 
-int {\bfseries autocalcular\+Id\+Servidor} ()
+int \mbox{\hyperlink{classServidor_a292f87f595ed2afd654abe3cc5ba8dc0}{autocalcular\+Id\+Servidor}} ()
+\item 
+\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} \mbox{\hyperlink{classServidor_afa99d1a7d42e43c66c066aa8d4622fbf}{login}} (\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} json\+Recibido)
+\item 
+\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} \mbox{\hyperlink{classServidor_a612baa3e7a827632a48aacdc024e2a20}{logout}} (\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} json\+Recibido)
+\item 
+\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} \mbox{\hyperlink{classServidor_adc19f6be9f624330db206a9d98c981a5}{registro}} (\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} json\+Recibido)
+\item 
+\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} \mbox{\hyperlink{classServidor_a172605658340719264d589037d2417d8}{consultar\+Seccion}} (\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} json\+Recibido)
+\item 
+\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} \mbox{\hyperlink{classServidor_a211b7b43cd2b5d81b1f21413bce9fbf2}{crear\+Entrada}} (\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} json\+Recibido)
+\item 
+bool \mbox{\hyperlink{classServidor_a41f9f66959c43b27d1d13cf4f20eca55}{exists}} (const \mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} \&json, const std\+::string \&key)
 \end{DoxyCompactItemize}
 
 
@@ -22,15 +33,62 @@ int {\bfseries autocalcular\+Id\+Servidor} ()
 Método constructor de la clase \mbox{\hyperlink{classServidor}{Servidor}}. 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classServidor_a2a7fdca08064f9e567c579a2cb34f267}\label{classServidor_a2a7fdca08064f9e567c579a2cb34f267}} 
+\mbox{\Hypertarget{classServidor_a292f87f595ed2afd654abe3cc5ba8dc0}\label{classServidor_a292f87f595ed2afd654abe3cc5ba8dc0}} 
+\index{Servidor@{Servidor}!autocalcular\+Id\+Servidor@{autocalcular\+Id\+Servidor}}
+\index{autocalcular\+Id\+Servidor@{autocalcular\+Id\+Servidor}!Servidor@{Servidor}}
+\subsubsection{\texorpdfstring{autocalcular\+Id\+Servidor()}{autocalcularIdServidor()}}
+{\footnotesize\ttfamily int Servidor\+::autocalcular\+Id\+Servidor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Calcula el ID de los mensajes que enviará a los clientes a través del websocket y lo devuelve. \mbox{\Hypertarget{classServidor_a172605658340719264d589037d2417d8}\label{classServidor_a172605658340719264d589037d2417d8}} 
+\index{Servidor@{Servidor}!consultar\+Seccion@{consultar\+Seccion}}
+\index{consultar\+Seccion@{consultar\+Seccion}!Servidor@{Servidor}}
+\subsubsection{\texorpdfstring{consultar\+Seccion()}{consultarSeccion()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} Servidor\+::consultar\+Seccion (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}}}]{received\+Object }\end{DoxyParamCaption})}
+
+Construye y envía el J\+S\+ON de respuesta cuando se realiza una petición de consulta de sección. Se accede a la base de datos y se cargan en el J\+S\+ON que se va a enviar todas las entradas encontradas de la sección indicada. \mbox{\Hypertarget{classServidor_a211b7b43cd2b5d81b1f21413bce9fbf2}\label{classServidor_a211b7b43cd2b5d81b1f21413bce9fbf2}} 
+\index{Servidor@{Servidor}!crear\+Entrada@{crear\+Entrada}}
+\index{crear\+Entrada@{crear\+Entrada}!Servidor@{Servidor}}
+\subsubsection{\texorpdfstring{crear\+Entrada()}{crearEntrada()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} Servidor\+::crear\+Entrada (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}}}]{received\+Object }\end{DoxyParamCaption})}
+
+Construye y envía el J\+S\+ON de respuesta cuando se realiza una petición para crear una entrada. Se cogen los parámetros del J\+S\+ON recibido y se transforman en datos. Se crea la entrada en la base de datos con el contenido introducido por el usuario. 
+\begin{DoxyParams}{Parameters}
+{\em received\+Object} & Es el J\+S\+ON enviado por el cliente, que contiene toda la información necesaria para realizar el insert en la base de datos. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classServidor_a41f9f66959c43b27d1d13cf4f20eca55}\label{classServidor_a41f9f66959c43b27d1d13cf4f20eca55}} 
+\index{Servidor@{Servidor}!exists@{exists}}
+\index{exists@{exists}!Servidor@{Servidor}}
+\subsubsection{\texorpdfstring{exists()}{exists()}}
+{\footnotesize\ttfamily bool Servidor\+::exists (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} \&}]{json,  }\item[{const std\+::string \&}]{key }\end{DoxyParamCaption})}
+
+Comprueba que el J\+S\+ON recibido contiene el campo indicado \mbox{\Hypertarget{classServidor_a2a7fdca08064f9e567c579a2cb34f267}\label{classServidor_a2a7fdca08064f9e567c579a2cb34f267}} 
 \index{Servidor@{Servidor}!iniciar\+Servidor@{iniciar\+Servidor}}
 \index{iniciar\+Servidor@{iniciar\+Servidor}!Servidor@{Servidor}}
 \subsubsection{\texorpdfstring{iniciar\+Servidor()}{iniciarServidor()}}
 {\footnotesize\ttfamily int Servidor\+::iniciar\+Servidor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-Text format
+Inicia el servidor websocket. El Websocket recibe los mensajes que envía el cliente, y en función del tipo de mensaje indicado en el J\+S\+ON accederá a la función que corresponda que se encargará de generar el mensaje de respuesta de J\+S\+ON. A continuación, el mensaje se envía.
 
-J\+S\+ON válido 
+Además de responder al mensaje, el servidor interactúa con la base de datos en función de los mensajes que recibe. \mbox{\Hypertarget{classServidor_afa99d1a7d42e43c66c066aa8d4622fbf}\label{classServidor_afa99d1a7d42e43c66c066aa8d4622fbf}} 
+\index{Servidor@{Servidor}!login@{login}}
+\index{login@{login}!Servidor@{Servidor}}
+\subsubsection{\texorpdfstring{login()}{login()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} Servidor\+::login (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}}}]{received\+Object }\end{DoxyParamCaption})}
+
+Construye y envía el J\+S\+ON de respuesta cuando se realiza una petición de login. Comprueba que exista el usuario con la contraseña y nombre indicados en la petición. Si existe, el usuario inicia sesión. De lo contrario, se le informa de que se ha equivocado al introducir sus credenciales. \mbox{\Hypertarget{classServidor_a612baa3e7a827632a48aacdc024e2a20}\label{classServidor_a612baa3e7a827632a48aacdc024e2a20}} 
+\index{Servidor@{Servidor}!logout@{logout}}
+\index{logout@{logout}!Servidor@{Servidor}}
+\subsubsection{\texorpdfstring{logout()}{logout()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} Servidor\+::logout (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}}}]{received\+Object }\end{DoxyParamCaption})}
+
+Construye y envía el J\+S\+ON de respuesta cuando se realiza una petición de logout. Comprueba que exista el usuario con la contraseña y nombre indicados en la petición. Si existe, el usuario cierra sesión. De lo contrario, se muestra un mensaje de error. \mbox{\Hypertarget{classServidor_adc19f6be9f624330db206a9d98c981a5}\label{classServidor_adc19f6be9f624330db206a9d98c981a5}} 
+\index{Servidor@{Servidor}!registro@{registro}}
+\index{registro@{registro}!Servidor@{Servidor}}
+\subsubsection{\texorpdfstring{registro()}{registro()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} Servidor\+::registro (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}}}]{received\+Object }\end{DoxyParamCaption})}
+
+Construye y envía el J\+S\+ON de respuesta cuando se realiza una petición de registro. Comprueba que no exista otro usuario con el nombre que se ha insertado. Si no existe, se registra a este nuevo usuario en la base de datos. De lo contrario, se le informa de que ese nombre de usuario ya existe, y que elija otro. 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 

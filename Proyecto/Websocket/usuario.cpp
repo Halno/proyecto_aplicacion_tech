@@ -4,16 +4,31 @@
 #include <QSqlRecord>
 #include <QDebug>
 
+/**
+ * Método constructor para la clase Usuario.
+*/
+
 Usuario::Usuario()
 {
 
 }
+
+/**
+ * Método constructor para la clase Usuario. Configura sus variables en función de los parámetros introducidos.
+ * @param nombre Nombre del usuario.
+ * @param password Contraseña del usuario.
+*/
 
 Usuario::Usuario(QString nombre, QString password)
 {
     this->m_nombreUsuario=nombre;
     this->m_passwordUsuario=password;
 }
+
+/**
+ * Se realiza una búsqueda de usuario en base a su ID.
+ * Se cargan los datos del usuario encontrado en la base de datos en los parámetros del objeto.
+*/
 
 void Usuario::load(int id)
 {
@@ -32,26 +47,32 @@ void Usuario::load(int id)
     } // end if
 }
 
-bool Usuario::find(QString nombre)
+/**
+ * Se realiza una búsqueda de usuario en base a su nombre.
+ * Se cargan los datos del usuario encontrado en la base de datos en los parámetros del objeto.
+*/
+
+void Usuario::load(QString nombre)
 {
-    bool result = false;
     QSqlQuery orden;
-    orden.prepare("SELECT * FROM usuario WHERE nombre_usuario = :nombre_usuario LIMIT 1");
-    orden.bindValue(":nombre_usuario", nombre);
+    orden.prepare("SELECT * FROM usuario WHERE nombre_usuario = :nombreUsuario LIMIT 1");
+    orden.bindValue(":nombreUsuario", nombre);
+    bool result {orden.exec()};
 
-    if (orden.exec())
+    if (result)
     {
-        if (orden.size() > 0) result = true;
-    }
-    else
-    {
-          qDebug() << orden.lastError().text();
+        orden.next();
+        m_idUsuario = orden.value("id_usuario").toInt();
+        m_nombreUsuario = orden.value("nombre_usuario").toString();
+        m_passwordUsuario = orden.value("password_usuario").toString();
+        qDebug() << "load: " << m_nombreUsuario;
     } // end if
-
-    qDebug() << ((result) ? "existe" : "no existe");
-
-    return result;
 }
+
+
+/**
+ * Actualiza la contraseña del usuario en la base de datos.
+*/
 
 bool Usuario::update()
 {
@@ -66,6 +87,10 @@ bool Usuario::update()
         return result;
 }
 
+/**
+ * Inserta al usuario en la base de datos.
+*/
+
 bool Usuario::insert()
 {
     QSqlQuery q;
@@ -78,6 +103,10 @@ bool Usuario::insert()
     bool result {q.exec()};
     return result;
 }
+
+/**
+ * Elimina al usuario de la base de datos, realizando la búsqueda por su ID.
+*/
 
 bool Usuario::remove()
 {
@@ -94,6 +123,11 @@ bool Usuario::remove()
     return result;
 }
 
+/**
+ * Comprueba la existencia del nombre de usuario en la base de datos.
+ * Si existe, devuelve true. De lo contrario, devuelve false.
+*/
+
 bool Usuario::registro()
 {
     bool result = false;
@@ -104,17 +138,16 @@ bool Usuario::registro()
     if (orden.exec())
     {
         if (orden.size() > 0) result = true;
-    }
-    else
-    {
-          qDebug() << orden.lastError().text();
     } // end if
 
-    qDebug() << ((result) ? "existe" : "no existe");
-
     return result;
-
 }
+
+/**
+ * Comprueba que el usuario en cuestión tiene la contraseña insertada por el usuario
+ * Si la contraseña es correcta, devuelve true.
+ * De lo contrario, devuelve false.
+*/
 
 bool Usuario::comprobarContrasenya()
 {
@@ -129,15 +162,15 @@ bool Usuario::comprobarContrasenya()
     {
         if (orden.size() > 0) result = true;
     }
-    else
-    {
-          qDebug() << orden.lastError().text();
-    } // end if
-
-    qDebug() << ((result) ? QObject::tr("Existe") : QObject::tr("No existe"));
 
     return result;
 }
+
+/**
+ * Esta función cambia el estado de inicio de sesión del usuario.
+ * Si en la base de datos está en true lo cambia a false, y viceversa.
+ * La función devuelve true si ha funcionado bien y false si se ha ocasionado algún error.
+*/
 
 bool Usuario::loginAndLogout()
 {
@@ -146,21 +179,12 @@ bool Usuario::loginAndLogout()
     orden.bindValue(":nombreUsuario", m_nombreUsuario);
     if (orden.exec())
     {
-        qDebug() <<orden.lastError().text();
         return true;
     }
     else
     {
         qDebug() <<orden.lastError().text();
         return false;
-    }
+    } // end if
 }
 
-
-/*
-bool Usuario::nuevaEntrada()
-{
-
-    //Crea una entrada en la sección indicada.
-}
-*/

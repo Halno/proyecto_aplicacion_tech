@@ -25,7 +25,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     usuario.cpp \
-    seccion.cpp \
     entrada.cpp \
     servidor.cpp
 
@@ -55,7 +54,6 @@ DISTFILES += \
 HEADERS += \
     json.hpp \
     usuario.h \
-    seccion.h \
     entrada.h \
     servidor.h
 

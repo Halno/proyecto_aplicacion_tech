@@ -2,6 +2,8 @@
 <html>
 <head>
 <style>
+
+/* -------------------------------------------- CSS -------------------------------------------------*/
  /* Bordered form */
 form 
 {
@@ -76,6 +78,18 @@ button:hover
   padding: 16px;
 }
 
+.contenedorTech
+{
+  padding: 16px;
+  display: none;
+}
+
+.bloqueTech
+{
+  padding: 16px;
+  border-style: double;
+}
+
 /* Change styles for span and cancel button on extra small screens */
 @media screen and (max-width: 300px) 
 {
@@ -87,11 +101,13 @@ button:hover
     width: 100%;
   }
 } 
+/* -------------------------------------------- FIN CSS -------------------------------------------------*/
 </style>
 <script>
-
+//--------------------------------------------- JAVASCRIPT ----------------------------------------------
 var g_idMensaje = 0;
 var nom_usuario;
+var id_usuario = 0;
 var pass;
 
 let socket = new WebSocket("wss://localhost:9990");
@@ -112,6 +128,7 @@ socket.onmessage = function(event)
   console.log(event.data);
   var object = JSON.parse(event.data);
   
+  
   if (object["tipo_respuesta"]=="respuesta_login")
   {
     if (object["Error"]==0)
@@ -119,6 +136,7 @@ socket.onmessage = function(event)
         document.getElementById("login").style.display="none";
         document.getElementById("nav_bar").style.display="block";
         document.getElementById("main_page").style.display="block";
+        id_usuario=object.idUsuario;
     }
     else
     {
@@ -133,6 +151,8 @@ socket.onmessage = function(event)
         document.getElementById("login").style.display="block";
         document.getElementById("nav_bar").style.display="none";
         document.getElementById("main_page").style.display="none";
+        document.getElementById("tech_encontrada").style.display="none";
+        id_usuario=0;
     }
     else
     {
@@ -140,9 +160,18 @@ socket.onmessage = function(event)
     }
   }
   
+  if (object["tipo_respuesta"]=="respuesta_seccion")
+  {
+    if (object["Error"]==0)
+    {
+        cargarTech(object);
+    }
+    else
+    {
+        alert(`[message] Data received from server: ${event.data}`);
+    }
+  }
   
-  
-  //document.getElementById("received_messages").innerHTML += "<div>" + object.message + "</div>";
   
 };
 
@@ -164,7 +193,21 @@ socket.onerror = function(error)
   alert(`[error] ${error.message}`);
 };
 
-
+function cargarTech(object)
+{
+        document.getElementById("tech_encontrada").style.display="block";
+        document.getElementById("tech_encontrada").innerHTML = '';
+        document.getElementById("tech_encontrada").innerHTML += '<h1> TECH ENCONTRADA </h1>';
+    
+        var contador;
+        for (contador = 0; contador < object.lista.length; contador++) 
+        {
+            document.getElementById("tech_encontrada").innerHTML += '<div id="entradaTech" class="bloqueTech"> '+
+                                                                    object.lista[contador].contenido+
+                                                                    '</div>'
+                                                                    +'<br/>'; 
+        }  
+};
 
 function enviarLogin()
 {
@@ -203,12 +246,23 @@ function enviarRegistro()
 function personaje()
 {
     var id_mensaje = autocalcularId();
-    var nombre_Usuario = nom_usuario;
     var contrasenya = pass;
     var personaje = document.getElementById("pj").value.toString();
     
     var mensajeJson = {tipo: "consultarSeccion", id: id_mensaje, usuario: nom_usuario, seccion: personaje}
     socket.send(JSON.stringify(mensajeJson));
+};
+
+function anyadirTech()
+{
+  var id_mensaje = autocalcularId();
+  var personaje = document.getElementById("pj").value.toString();
+  var contenido_tech = document.getElementById("techParaAnyadir").value.toString();
+  
+  var mensajeJson = {tipo: "crearEntrada", id: id_mensaje, usuario: id_usuario, seccion: personaje, tech: contenido_tech}
+  socket.send(JSON.stringify(mensajeJson));
+  
+  document.getElementById("techParaAnyadir").value='';
 };
 
 
@@ -217,9 +271,14 @@ function autocalcularId()
     g_idMensaje++;
     return g_idMensaje;
 };
+
+//--------------------------------------------- FIN JAVASCRIPT ----------------------------------------------
+
 </script>
 </head>
 <body>
+
+<!--                                                HTML                                            -->
 
 <!--Div barra de navegación-->
 
@@ -271,6 +330,13 @@ function autocalcularId()
         </select> 
         
         <button onclick="personaje()"> Buscar tech </button>
+        <button onclick="anyadirTech()"> Enviar tech para este personaje </button>
+        <input type="text" id="techParaAnyadir" name="campoTextoAnyadirTech">
+        <br/>
+        <br/>
+</div>
+
+<div id="tech_encontrada" class="contenedorTech">
 </div>
 
 <!--Fin div de página principal-->
@@ -278,6 +344,6 @@ function autocalcularId()
 <div id="received_messages">
 </div>
 
-
+<!--                                                FIN HTML                                            -->
 </body>
 </html>

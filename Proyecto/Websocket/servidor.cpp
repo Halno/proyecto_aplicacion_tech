@@ -6,7 +6,7 @@
 #include "../../IXWebSocket/ixwebsocket/IXWebSocket.h"
 #include "../../IXWebSocket/ixwebsocket/IXConnectionState.h"
 #include "usuario.h"
-#include "conexionusuarios.h"
+#include "entrada.h"
 #include <QString>
 #include <QDebug>
 using JSON = nlohmann::json;
@@ -78,7 +78,9 @@ JSON Servidor::login(JSON receivedObject)
     else
     {
         user.loginAndLogout();
-    }
+        user.load(nombreUsuario);
+        respuesta["idUsuario"]= user.m_idUsuario;
+    } // end if
 
     return respuesta;
 }
@@ -117,7 +119,7 @@ JSON Servidor::logout(JSON receivedObject)
         {
             respuesta["Error"] = 1;
             respuesta["mensaje"] = "Error al cerrar sesión";
-        }
+        } // end if
 
 
     return respuesta;
@@ -156,10 +158,18 @@ JSON Servidor::registro(JSON receivedObject)
     {
         user.insert();
         respuesta["mensaje"] = "Has completado el registro con éxito";
-    }
+    } // end if
 
     return respuesta;
 }
+
+/**
+ * Construye y envía el JSON de respuesta cuando se realiza una petición para crear una entrada.
+ * Se cogen los parámetros del JSON recibido y se transforman en datos.
+ * Se crea la entrada en la base de datos con el contenido introducido por el usuario.
+ * @param receivedObject Es el JSON enviado por el cliente, que contiene toda la información necesaria para realizar el insert en la base de datos.
+ *
+*/
 
 JSON Servidor::crearEntrada(JSON receivedObject)
 {
@@ -167,8 +177,20 @@ JSON Servidor::crearEntrada(JSON receivedObject)
 
     respuesta["idServidor"] = autocalcularIdServidor();
     respuesta["idCliente"] = receivedObject["id"];
+    respuesta["tipo_respuesta"] ="respuesta_crearEntrada";
+    respuesta["Error"]=0;
 
-    //crearEntrada
+    std::string per=receivedObject["seccion"];
+    QString personaje=QString::fromUtf8(per.c_str());
+
+    std::string con=receivedObject["tech"];
+    QString contenido=QString::fromUtf8(con.c_str());
+
+    int id_usuario=receivedObject["usuario"];
+
+    Entrada nuevaTech(id_usuario, contenido, personaje);
+    nuevaTech.insert();
+
     respuesta["mensaje"] = "Entrada creada.";
 
 
@@ -176,13 +198,28 @@ JSON Servidor::crearEntrada(JSON receivedObject)
 
 }
 
+
+/**
+* Construye y envía el JSON de respuesta cuando se realiza una petición de consulta de sección.
+* Se accede a la base de datos y se cargan en el JSON que se va a enviar todas las entradas encontradas de la sección indicada.
+*/
+
 JSON Servidor::consultarSeccion(JSON receivedObject)
 {
     JSON respuesta;
 
     respuesta["idServidor"] = autocalcularIdServidor();
     respuesta["idCliente"] = receivedObject["id"];
-    //respuesta["listaEntradas"] = función para crear la lista de entradas
+    respuesta["tipo_respuesta"]="respuesta_seccion";
+    respuesta["Error"]=0;
+
+    std::string per=receivedObject["seccion"];
+
+    QString personaje=QString::fromUtf8(per.c_str());
+
+    qDebug() << personaje;
+
+    respuesta=Entrada::cargarEntradas(personaje, respuesta);
 
     return respuesta;
 
@@ -197,6 +234,8 @@ JSON Servidor::consultarSeccion(JSON receivedObject)
 *
 * Además de responder al mensaje, el servidor interactúa con la base de datos
 * en función de los mensajes que recibe.
+*
+*
 */
 
 int Servidor::iniciarServidor()
@@ -213,7 +252,7 @@ int Servidor::iniciarServidor()
     if (tlsOptions.isValid())
     {
         std::cerr << "SSL valid" << std::endl;
-    }
+    } // end if
 
     server.setTLSOptions(tlsOptions);
 
@@ -240,65 +279,65 @@ int Servidor::iniciarServidor()
                     {
                         if (!msg->binary)
                         {
-                            /// Text format
+                            // Text format
                             qDebug() << QObject::tr("Mensaje recibido:");
                         }
 
 
-                        auto receivedObject = JSON::parse(msg->str);
+                        auto mensajeRecibido = JSON::parse(msg->str);
 
-                        if (receivedObject.is_discarded())
+                        if (mensajeRecibido.is_discarded())
                         {
                             qDebug() << QObject::tr("Error");
                         }
                         else
                         {
-                                ///JSON válido
-                                if (exists(receivedObject, "tipo"))
+                                //JSON válido
+                                if (exists(mensajeRecibido, "tipo"))
                                 {
-                                    std::string tipo = receivedObject["tipo"];
+                                    std::string tipo = mensajeRecibido["tipo"];
 
 
                                     if (tipo=="login")
                                     {
-                                        JSON respuesta = login(receivedObject);
+                                        JSON respuesta = login(mensajeRecibido);
                                         webSocket->send(respuesta.dump());
-                                    }
+                                    } // end if
 
 
                                     if (tipo=="crearEntrada")
                                     {
-                                        JSON respuesta=crearEntrada(receivedObject);
+                                        JSON respuesta=crearEntrada(mensajeRecibido);
                                         webSocket->send(respuesta.dump());
-                                    }
+                                    } // end if
 
                                     if (tipo=="consultarSeccion")
                                     {
-                                        JSON respuesta = consultarSeccion(receivedObject);
+                                        JSON respuesta = consultarSeccion(mensajeRecibido);
                                         webSocket->send(respuesta.dump());
-                                    }
+                                    } // end if
 
 
                                     if (tipo=="registro")
                                     {
-                                        JSON respuesta = registro(receivedObject);
+                                        JSON respuesta = registro(mensajeRecibido);
                                         webSocket->send(respuesta.dump());
-                                    }
+                                    } // end if
 
 
                                     if (tipo=="logout")
                                     {
-                                        JSON respuesta = logout(receivedObject);
+                                        JSON respuesta = logout(mensajeRecibido);
                                         webSocket->send(respuesta.dump());
-                                    }
+                                    } // end if
 
                                 }
                                 else
                                 {
                                     qDebug() << QObject::tr("Error: falta tipo en el mensaje.");
-                                }
-                        }
-                    }
+                                } // end if
+                        } // end if
+                    } // end if
                 }
             );
         }

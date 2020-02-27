@@ -1,7 +1,6 @@
 var searchData=
 [
   ['sax_5fparse',['sax_parse',['../classnlohmann_1_1detail_1_1binary__reader.html#ab94a54d6e595c2620b07589cf4116256',1,'nlohmann::detail::binary_reader::sax_parse()'],['../classnlohmann_1_1basic__json.html#a8a3dd150c2d1f0df3502d937de0871db',1,'nlohmann::basic_json::sax_parse()']]],
-  ['seccion',['Seccion',['../classSeccion.html',1,'']]],
   ['serializer',['serializer',['../classnlohmann_1_1detail_1_1serializer.html',1,'nlohmann::detail::serializer&lt; BasicJsonType &gt;'],['../classnlohmann_1_1detail_1_1serializer.html#ac010525281d97867ee842da37294fe83',1,'nlohmann::detail::serializer::serializer()']]],
   ['servidor',['Servidor',['../classServidor.html',1,'Servidor'],['../classServidor.html#a6be6f59fd470098d8d79bfa22c378b81',1,'Servidor::Servidor()']]],
   ['set_5fbegin',['set_begin',['../classnlohmann_1_1detail_1_1primitive__iterator__t.html#a9d9b005906106e12aed738f97d7fee42',1,'nlohmann::detail::primitive_iterator_t']]],

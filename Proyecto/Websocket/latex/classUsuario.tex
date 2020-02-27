@@ -3,39 +3,28 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{classUsuario_a21975acad49ffd19aa3cf818d03527ad}\label{classUsuario_a21975acad49ffd19aa3cf818d03527ad}} 
-{\bfseries Usuario} (Q\+String nombre, Q\+String password)
+\mbox{\hyperlink{classUsuario_aa85a5371a098dfba5449140d9b8a472f}{Usuario}} ()
 \item 
-\mbox{\Hypertarget{classUsuario_a582cfc5fb035575f66240d1784c50632}\label{classUsuario_a582cfc5fb035575f66240d1784c50632}} 
-void {\bfseries load} (int id)
+\mbox{\hyperlink{classUsuario_a21975acad49ffd19aa3cf818d03527ad}{Usuario}} (Q\+String nombre, Q\+String password)
+\item 
+void \mbox{\hyperlink{classUsuario_a582cfc5fb035575f66240d1784c50632}{load}} (int id)
+\item 
+void \mbox{\hyperlink{classUsuario_ab1cdc9970f8f50f4b554a563fd2ab41d}{load}} (Q\+String nombre)
 \item 
 bool \mbox{\hyperlink{classUsuario_abccc47bddb1deac69920f4dcb7a44b97}{update}} ()
 \item 
 bool \mbox{\hyperlink{classUsuario_a6adb77ca92414402116ed0256718b227}{insert}} ()
 \item 
-\mbox{\Hypertarget{classUsuario_a2e01f0e772aabe9c66ef326eca458405}\label{classUsuario_a2e01f0e772aabe9c66ef326eca458405}} 
-bool {\bfseries remove} ()
+bool \mbox{\hyperlink{classUsuario_a2e01f0e772aabe9c66ef326eca458405}{remove}} ()
 \item 
-\mbox{\Hypertarget{classUsuario_a708f7cbd127ba0f9a91a1b5c681fa5e7}\label{classUsuario_a708f7cbd127ba0f9a91a1b5c681fa5e7}} 
-bool {\bfseries comprobar\+Contrasenya} ()
+bool \mbox{\hyperlink{classUsuario_a708f7cbd127ba0f9a91a1b5c681fa5e7}{comprobar\+Contrasenya}} ()
 \item 
-\mbox{\Hypertarget{classUsuario_aea05bcbf762bc5c6d1e33990f2c52bf4}\label{classUsuario_aea05bcbf762bc5c6d1e33990f2c52bf4}} 
-bool {\bfseries registro} ()
+bool \mbox{\hyperlink{classUsuario_aea05bcbf762bc5c6d1e33990f2c52bf4}{registro}} ()
 \item 
-\mbox{\Hypertarget{classUsuario_a03850510ec70df9a5da7f31e66034d8a}\label{classUsuario_a03850510ec70df9a5da7f31e66034d8a}} 
-bool {\bfseries login\+And\+Logout} ()
+bool \mbox{\hyperlink{classUsuario_a03850510ec70df9a5da7f31e66034d8a}{login\+And\+Logout}} ()
 \item 
-\mbox{\Hypertarget{classUsuario_a02b402692171dd62745a7fdf82594a70}\label{classUsuario_a02b402692171dd62745a7fdf82594a70}} 
-bool {\bfseries logout} ()
-\item 
-\mbox{\Hypertarget{classUsuario_ac3e0282b2dafe69ce640cb8864ad7973}\label{classUsuario_ac3e0282b2dafe69ce640cb8864ad7973}} 
-bool {\bfseries nueva\+Entrada} (\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} received\+Object)
-\end{DoxyCompactItemize}
-\subsection*{Static Public Member Functions}
-\begin{DoxyCompactItemize}
-\item 
-\mbox{\Hypertarget{classUsuario_a713ee3e7e88555c1c0dd58b602328348}\label{classUsuario_a713ee3e7e88555c1c0dd58b602328348}} 
-static bool {\bfseries find} (Q\+String nombre)
+\mbox{\Hypertarget{classUsuario_a8776b368054f04bf01dd238efe19166d}\label{classUsuario_a8776b368054f04bf01dd238efe19166d}} 
+bool {\bfseries nueva\+Entrada} (\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} json\+Recibido)
 \end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
@@ -51,20 +40,78 @@ Q\+String {\bfseries m\+\_\+password\+Usuario}
 \end{DoxyCompactItemize}
 
 
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classUsuario_aa85a5371a098dfba5449140d9b8a472f}\label{classUsuario_aa85a5371a098dfba5449140d9b8a472f}} 
+\index{Usuario@{Usuario}!Usuario@{Usuario}}
+\index{Usuario@{Usuario}!Usuario@{Usuario}}
+\subsubsection{\texorpdfstring{Usuario()}{Usuario()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Usuario\+::\+Usuario (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Método constructor para la clase \mbox{\hyperlink{classUsuario}{Usuario}}. \mbox{\Hypertarget{classUsuario_a21975acad49ffd19aa3cf818d03527ad}\label{classUsuario_a21975acad49ffd19aa3cf818d03527ad}} 
+\index{Usuario@{Usuario}!Usuario@{Usuario}}
+\index{Usuario@{Usuario}!Usuario@{Usuario}}
+\subsubsection{\texorpdfstring{Usuario()}{Usuario()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Usuario\+::\+Usuario (\begin{DoxyParamCaption}\item[{Q\+String}]{nombre,  }\item[{Q\+String}]{password }\end{DoxyParamCaption})}
+
+Método constructor para la clase \mbox{\hyperlink{classUsuario}{Usuario}}. Configura sus variables en función de los parámetros introducidos. 
+\begin{DoxyParams}{Parameters}
+{\em nombre} & Nombre del usuario. \\
+\hline
+{\em password} & Contraseña del usuario. \\
+\hline
+\end{DoxyParams}
+
+
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classUsuario_a6adb77ca92414402116ed0256718b227}\label{classUsuario_a6adb77ca92414402116ed0256718b227}} 
+\mbox{\Hypertarget{classUsuario_a708f7cbd127ba0f9a91a1b5c681fa5e7}\label{classUsuario_a708f7cbd127ba0f9a91a1b5c681fa5e7}} 
+\index{Usuario@{Usuario}!comprobar\+Contrasenya@{comprobar\+Contrasenya}}
+\index{comprobar\+Contrasenya@{comprobar\+Contrasenya}!Usuario@{Usuario}}
+\subsubsection{\texorpdfstring{comprobar\+Contrasenya()}{comprobarContrasenya()}}
+{\footnotesize\ttfamily bool Usuario\+::comprobar\+Contrasenya (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Comprueba que el usuario en cuestión tiene la contraseña insertada por el usuario Si la contraseña es correcta, devuelve true. De lo contrario, devuelve false. \mbox{\Hypertarget{classUsuario_a6adb77ca92414402116ed0256718b227}\label{classUsuario_a6adb77ca92414402116ed0256718b227}} 
 \index{Usuario@{Usuario}!insert@{insert}}
 \index{insert@{insert}!Usuario@{Usuario}}
 \subsubsection{\texorpdfstring{insert()}{insert()}}
 {\footnotesize\ttfamily bool Usuario\+::insert (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-I\+N\+S\+E\+RT \mbox{\Hypertarget{classUsuario_abccc47bddb1deac69920f4dcb7a44b97}\label{classUsuario_abccc47bddb1deac69920f4dcb7a44b97}} 
+Inserta al usuario en la base de datos. I\+N\+S\+E\+RT \mbox{\Hypertarget{classUsuario_a582cfc5fb035575f66240d1784c50632}\label{classUsuario_a582cfc5fb035575f66240d1784c50632}} 
+\index{Usuario@{Usuario}!load@{load}}
+\index{load@{load}!Usuario@{Usuario}}
+\subsubsection{\texorpdfstring{load()}{load()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Usuario\+::load (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})}
+
+Se realiza una búsqueda de usuario en base a su ID. Se cargan los datos del usuario encontrado en la base de datos en los parámetros del objeto. \mbox{\Hypertarget{classUsuario_ab1cdc9970f8f50f4b554a563fd2ab41d}\label{classUsuario_ab1cdc9970f8f50f4b554a563fd2ab41d}} 
+\index{Usuario@{Usuario}!load@{load}}
+\index{load@{load}!Usuario@{Usuario}}
+\subsubsection{\texorpdfstring{load()}{load()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Usuario\+::load (\begin{DoxyParamCaption}\item[{Q\+String}]{nombre }\end{DoxyParamCaption})}
+
+Se realiza una búsqueda de usuario en base a su nombre. Se cargan los datos del usuario encontrado en la base de datos en los parámetros del objeto. \mbox{\Hypertarget{classUsuario_a03850510ec70df9a5da7f31e66034d8a}\label{classUsuario_a03850510ec70df9a5da7f31e66034d8a}} 
+\index{Usuario@{Usuario}!login\+And\+Logout@{login\+And\+Logout}}
+\index{login\+And\+Logout@{login\+And\+Logout}!Usuario@{Usuario}}
+\subsubsection{\texorpdfstring{login\+And\+Logout()}{loginAndLogout()}}
+{\footnotesize\ttfamily bool Usuario\+::login\+And\+Logout (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Esta función cambia el estado de inicio de sesión del usuario. Si en la base de datos está en true lo cambia a false, y viceversa. La función devuelve true si ha funcionado bien y false si se ha ocasionado algún error. \mbox{\Hypertarget{classUsuario_aea05bcbf762bc5c6d1e33990f2c52bf4}\label{classUsuario_aea05bcbf762bc5c6d1e33990f2c52bf4}} 
+\index{Usuario@{Usuario}!registro@{registro}}
+\index{registro@{registro}!Usuario@{Usuario}}
+\subsubsection{\texorpdfstring{registro()}{registro()}}
+{\footnotesize\ttfamily bool Usuario\+::registro (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Comprueba la existencia del nombre de usuario en la base de datos. Si existe, devuelve true. De lo contrario, devuelve false. \mbox{\Hypertarget{classUsuario_a2e01f0e772aabe9c66ef326eca458405}\label{classUsuario_a2e01f0e772aabe9c66ef326eca458405}} 
+\index{Usuario@{Usuario}!remove@{remove}}
+\index{remove@{remove}!Usuario@{Usuario}}
+\subsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily bool Usuario\+::remove (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Elimina al usuario de la base de datos, realizando la búsqueda por su ID. \mbox{\Hypertarget{classUsuario_abccc47bddb1deac69920f4dcb7a44b97}\label{classUsuario_abccc47bddb1deac69920f4dcb7a44b97}} 
 \index{Usuario@{Usuario}!update@{update}}
 \index{update@{update}!Usuario@{Usuario}}
 \subsubsection{\texorpdfstring{update()}{update()}}
 {\footnotesize\ttfamily bool Usuario\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-U\+P\+D\+A\+TE 
+Actualiza la contraseña del usuario en la base de datos. U\+P\+D\+A\+TE 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 

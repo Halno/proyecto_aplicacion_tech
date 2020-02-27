@@ -14,11 +14,11 @@ public:
     int iniciarServidor();
     int autocalcularIdServidor();
 
-    JSON login(JSON receivedObject);
-    JSON logout(JSON receivedObject);
-    JSON registro(JSON receivedObject);
-    JSON consultarSeccion(JSON receivedObject);
-    JSON crearEntrada(JSON receivedObject);
+    JSON login(JSON jsonRecibido);
+    JSON logout(JSON jsonRecibido);
+    JSON registro(JSON jsonRecibido);
+    JSON consultarSeccion(JSON jsonRecibido);
+    JSON crearEntrada(JSON jsonRecibido);
 
     bool exists(const JSON& json, const std::string& key);
 

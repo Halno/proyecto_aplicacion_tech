@@ -22,13 +22,17 @@ using JSON = nlohmann::json;
 
 /**
 * Función principal del programa.
+*
+* Se implementa el soporte para traducciones y se realiza la conexión
+* con la base de datos.
+*
+* A continuación, se procede a iniciar el servidor.
 */
 
 int main(int argc, char *argv[])
 {
-    /**
-    * Implementación de soporte para traducciones.
-    */
+
+    // Implementación de soporte para traducciones.
 
     QCoreApplication app(argc, argv);
     QTranslator traductor;
@@ -36,11 +40,11 @@ int main(int argc, char *argv[])
     if (traductor.load("traductor_"+QLocale::system().name(), "../Websocket"))
     {
         app.installTranslator(&traductor);
-    };
+    }; // end if
 
-    /**
-    * Conexión con la base de datos.
-    */
+
+    //Conexión con la base de datos.
+
 
     QSqlDatabase db;
     db = (QSqlDatabase::addDatabase("QPSQL"));
@@ -55,13 +59,12 @@ int main(int argc, char *argv[])
     {
         qDebug() << QObject::tr("Error al intentar iniciar la base de datos");
         qDebug() << db.lastError().text();
-    }
+    } // end if
 
 
-    /**
-    * Se crea instancia de la clase servidor, y se llama a la función
-    * para iniciarlo.
-    */
+
+    //Se crea instancia de la clase servidor, y se llama a la función para iniciarlo.
+
 
     Servidor *servidor;
     servidor->iniciarServidor();

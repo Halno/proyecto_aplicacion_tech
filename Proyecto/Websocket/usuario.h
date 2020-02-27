@@ -21,20 +21,21 @@ public:
     QString m_nombreUsuario;
     QString m_passwordUsuario;
 
+
     Usuario();
     Usuario(QString nombre, QString password);
+
     void load(int id);
-    static bool find(QString nombre);
+    void load(QString nombre);
+
     bool update();
     bool insert();
     bool remove();
     bool comprobarContrasenya();
 
-
     bool registro();
     bool loginAndLogout();
-    bool logout();
-    bool nuevaEntrada(JSON receivedObject);
+    bool nuevaEntrada(JSON jsonRecibido);
 };
 
 #endif // USUARIO_H
