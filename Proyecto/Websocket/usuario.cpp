@@ -78,7 +78,6 @@ bool Usuario::update()
 {
     QSqlQuery q;
 
-        /// UPDATE
         q.prepare("UPDATE usuario SET password_usuario = :passwordUsuario WHERE id_usuario = :idUsuario");
         q.bindValue(":idUsuario", m_idUsuario);
         q.bindValue(":passwordUsuario", m_passwordUsuario);
@@ -95,7 +94,6 @@ bool Usuario::insert()
 {
     QSqlQuery q;
 
-    /// INSERT
     q.prepare("INSERT INTO usuario (nombre_usuario, password_usuario) VALUES (:nombreUsuario, :passwordUsuario)");
     q.bindValue(":nombreUsuario", m_nombreUsuario);
     q.bindValue(":passwordUsuario", m_passwordUsuario);

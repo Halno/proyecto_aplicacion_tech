@@ -256,7 +256,7 @@ function personaje()
 function anyadirTech()
 {
   var id_mensaje = autocalcularId();
-  var personaje = document.getElementById("pj").value.toString();
+  var personaje = document.getElementById("pj1").value.toString();
   var contenido_tech = document.getElementById("techParaAnyadir").value.toString();
   
   var mensajeJson = {tipo: "crearEntrada", id: id_mensaje, usuario: id_usuario, seccion: personaje, tech: contenido_tech}
@@ -319,6 +319,9 @@ function autocalcularId()
 <div id="main_page" class="container" style="display:none">
 
     <h3> PÁGINA PRINCIPAL </h3>
+    
+        <h4> Selecciona el personaje del que quieras buscar tech y, a continuación, haz click en el botón para buscar tech de ese personaje.</h4>
+        
         <label for="pj">Escoge un personaje:</label>
 
         <select id="pj">
@@ -330,8 +333,23 @@ function autocalcularId()
         </select> 
         
         <button onclick="personaje()"> Buscar tech </button>
-        <button onclick="anyadirTech()"> Enviar tech para este personaje </button>
+        
+        
+        <h4> Selecciona el personaje del que quieras introducir tech, introduce en este campo de texto la tech que quieras añadir y, a continuación, haz click en el botón para enviarla. </h4>
+        
+        <label for="pj1">Escoge un personaje:</label>
+
+        <select id="pj1">
+        <option value="ryu">Ryu</option>
+        <option value="ken">Ken</option>
+        <option value="sagat">Sagat</option>
+        <option value="cammy">Cammy</option>
+        
+        </select> 
+        
         <input type="text" id="techParaAnyadir" name="campoTextoAnyadirTech">
+        
+        <button onclick="anyadirTech()"> Enviar tech para este personaje </button>
         <br/>
         <br/>
 </div>

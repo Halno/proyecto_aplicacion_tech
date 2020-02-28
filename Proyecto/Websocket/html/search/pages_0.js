@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['deprecated_20list',['Deprecated List',['../deprecated.html',1,'']]]
+  ['aplicaciÓn_20tech_3a',['APLICACIÓN TECH:',['../md_READ_ME.html',1,'']]]
 ];

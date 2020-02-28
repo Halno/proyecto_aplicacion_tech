@@ -10,5 +10,6 @@ var searchData=
   ['array_5fstart',['array_start',['../classnlohmann_1_1detail_1_1parser.html#a37ac88c864dda495f72cb62776b0bebeaa4388a3d92419edbb1c6efd4d52461f3',1,'nlohmann::detail::parser']]],
   ['array_5ft',['array_t',['../classnlohmann_1_1basic__json.html#ae095578e03df97c5b3991787f1056374',1,'nlohmann::basic_json']]],
   ['at',['at',['../classnlohmann_1_1basic__json.html#a73ae333487310e3302135189ce8ff5d8',1,'nlohmann::basic_json::at(size_type idx)'],['../classnlohmann_1_1basic__json.html#ab157adb4de8475b452da9ebf04f2de15',1,'nlohmann::basic_json::at(size_type idx) const'],['../classnlohmann_1_1basic__json.html#a93403e803947b86f4da2d1fb3345cf2c',1,'nlohmann::basic_json::at(const typename object_t::key_type &amp;key)'],['../classnlohmann_1_1basic__json.html#acac9d438c9bb12740dcdb01069293a34',1,'nlohmann::basic_json::at(const typename object_t::key_type &amp;key) const'],['../classnlohmann_1_1basic__json.html#a8ab61397c10f18b305520da7073b2b45',1,'nlohmann::basic_json::at(const json_pointer &amp;ptr)'],['../classnlohmann_1_1basic__json.html#a7479d686148c26e252781bb32aa5d5c9',1,'nlohmann::basic_json::at(const json_pointer &amp;ptr) const']]],
-  ['autocalcularidservidor',['autocalcularIdServidor',['../classServidor.html#a292f87f595ed2afd654abe3cc5ba8dc0',1,'Servidor']]]
+  ['autocalcularidservidor',['autocalcularIdServidor',['../classServidor.html#a292f87f595ed2afd654abe3cc5ba8dc0',1,'Servidor']]],
+  ['aplicaciÓn_20tech_3a',['APLICACIÓN TECH:',['../md_READ_ME.html',1,'']]]
 ];
