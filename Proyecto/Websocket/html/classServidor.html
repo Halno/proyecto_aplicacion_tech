@@ -73,6 +73,8 @@ $(function() {
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6be6f59fd470098d8d79bfa22c378b81"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classServidor.html#a6be6f59fd470098d8d79bfa22c378b81">Servidor</a> ()</td></tr>
 <tr class="separator:a6be6f59fd470098d8d79bfa22c378b81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae784cce9d89f9f9ca0804abdb9c3c9d7"><td class="memItemLeft" align="right" valign="top">QSqlDatabase&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classServidor.html#ae784cce9d89f9f9ca0804abdb9c3c9d7">getDatabase</a> ()</td></tr>
+<tr class="separator:ae784cce9d89f9f9ca0804abdb9c3c9d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a7fdca08064f9e567c579a2cb34f267"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classServidor.html#a2a7fdca08064f9e567c579a2cb34f267">iniciarServidor</a> ()</td></tr>
 <tr class="separator:a2a7fdca08064f9e567c579a2cb34f267"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a292f87f595ed2afd654abe3cc5ba8dc0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classServidor.html#a292f87f595ed2afd654abe3cc5ba8dc0">autocalcularIdServidor</a> ()</td></tr>
@@ -200,6 +202,24 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ae784cce9d89f9f9ca0804abdb9c3c9d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae784cce9d89f9f9ca0804abdb9c3c9d7">&#9670;&nbsp;</a></span>getDatabase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QSqlDatabase Servidor::getDatabase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Crea la base de datos, ajusta sus parámetros y la devuelve para ser empleada. </p>
+
+</div>
+</div>
 <a id="a2a7fdca08064f9e567c579a2cb34f267"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2a7fdca08064f9e567c579a2cb34f267">&#9670;&nbsp;</a></span>iniciarServidor()</h2>
 
@@ -214,7 +234,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Inicia el servidor websocket. El Websocket recibe los mensajes que envía el cliente, y en función del tipo de mensaje indicado en el JSON accederá a la función que corresponda que se encargará de generar el mensaje de respuesta de JSON. A continuación, el mensaje se envía.</p>
+<p>Realiza la conexión con la base de datos. Inicia el servidor websocket. El Websocket recibe los mensajes que envía el cliente, y en función del tipo de mensaje indicado en el JSON accederá a la función que corresponda que se encargará de generar el mensaje de respuesta de JSON. A continuación, el mensaje se envía.</p>
 <p>Además de responder al mensaje, el servidor interactúa con la base de datos en función de los mensajes que recibe. </p>
 
 </div>

@@ -5,6 +5,8 @@
 \item 
 \mbox{\hyperlink{classServidor_a6be6f59fd470098d8d79bfa22c378b81}{Servidor}} ()
 \item 
+Q\+Sql\+Database \mbox{\hyperlink{classServidor_ae784cce9d89f9f9ca0804abdb9c3c9d7}{get\+Database}} ()
+\item 
 int \mbox{\hyperlink{classServidor_a2a7fdca08064f9e567c579a2cb34f267}{iniciar\+Servidor}} ()
 \item 
 int \mbox{\hyperlink{classServidor_a292f87f595ed2afd654abe3cc5ba8dc0}{autocalcular\+Id\+Servidor}} ()
@@ -62,13 +64,19 @@ Construye y envía el J\+S\+ON de respuesta cuando se realiza una petición para
 \subsubsection{\texorpdfstring{exists()}{exists()}}
 {\footnotesize\ttfamily bool Servidor\+::exists (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} \&}]{json,  }\item[{const std\+::string \&}]{key }\end{DoxyParamCaption})}
 
-Comprueba que el J\+S\+ON recibido contiene el campo indicado \mbox{\Hypertarget{classServidor_a2a7fdca08064f9e567c579a2cb34f267}\label{classServidor_a2a7fdca08064f9e567c579a2cb34f267}} 
+Comprueba que el J\+S\+ON recibido contiene el campo indicado \mbox{\Hypertarget{classServidor_ae784cce9d89f9f9ca0804abdb9c3c9d7}\label{classServidor_ae784cce9d89f9f9ca0804abdb9c3c9d7}} 
+\index{Servidor@{Servidor}!get\+Database@{get\+Database}}
+\index{get\+Database@{get\+Database}!Servidor@{Servidor}}
+\subsubsection{\texorpdfstring{get\+Database()}{getDatabase()}}
+{\footnotesize\ttfamily Q\+Sql\+Database Servidor\+::get\+Database (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Crea la base de datos, ajusta sus parámetros y la devuelve para ser empleada. \mbox{\Hypertarget{classServidor_a2a7fdca08064f9e567c579a2cb34f267}\label{classServidor_a2a7fdca08064f9e567c579a2cb34f267}} 
 \index{Servidor@{Servidor}!iniciar\+Servidor@{iniciar\+Servidor}}
 \index{iniciar\+Servidor@{iniciar\+Servidor}!Servidor@{Servidor}}
 \subsubsection{\texorpdfstring{iniciar\+Servidor()}{iniciarServidor()}}
 {\footnotesize\ttfamily int Servidor\+::iniciar\+Servidor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-Inicia el servidor websocket. El Websocket recibe los mensajes que envía el cliente, y en función del tipo de mensaje indicado en el J\+S\+ON accederá a la función que corresponda que se encargará de generar el mensaje de respuesta de J\+S\+ON. A continuación, el mensaje se envía.
+Realiza la conexión con la base de datos. Inicia el servidor websocket. El Websocket recibe los mensajes que envía el cliente, y en función del tipo de mensaje indicado en el J\+S\+ON accederá a la función que corresponda que se encargará de generar el mensaje de respuesta de J\+S\+ON. A continuación, el mensaje se envía.
 
 Además de responder al mensaje, el servidor interactúa con la base de datos en función de los mensajes que recibe. \mbox{\Hypertarget{classServidor_afa99d1a7d42e43c66c066aa8d4622fbf}\label{classServidor_afa99d1a7d42e43c66c066aa8d4622fbf}} 
 \index{Servidor@{Servidor}!login@{login}}

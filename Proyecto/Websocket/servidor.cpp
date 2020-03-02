@@ -8,10 +8,12 @@
 #include "usuario.h"
 #include "entrada.h"
 #include <QString>
+#include <QSqlError>
 #include <QDebug>
 using JSON = nlohmann::json;
 
     static int g_idMensaje;
+    static QSqlDatabase db;
 
 /**
 * Método constructor de la clase Servidor.
@@ -20,6 +22,24 @@ using JSON = nlohmann::json;
 Servidor::Servidor()
 {
 
+}
+
+
+/**
+ * Crea la base de datos, ajusta sus parámetros y la devuelve para ser empleada.
+ */
+
+QSqlDatabase Servidor::getDatabase()
+{
+    QSqlDatabase db;
+    db = (QSqlDatabase::addDatabase("QPSQL"));
+    db.setHostName("localhost");
+    db.setDatabaseName("tech");
+    db.setPort(5432);
+    //3306
+    db.setUserName("postgres");
+    db.setPassword("");
+    return db;
 }
 
 
@@ -70,14 +90,14 @@ JSON Servidor::login(JSON receivedObject)
     Usuario user(nombreUsuario, passwordUsuario);
 
 
-    if (!user.comprobarContrasenya())
+    if (!user.comprobarContrasenya(db))
     {
         respuesta["Error"]= 1;
         respuesta["mensajeError"]= "Nombre de usuario y/o contraseña incorrecto(s).";
     }
     else
     {
-        user.loginAndLogout();
+        user.loginAndLogout(db);
         user.load(nombreUsuario);
         respuesta["idUsuario"]= user.m_idUsuario;
     } // end if
@@ -110,9 +130,9 @@ JSON Servidor::logout(JSON receivedObject)
 
     Usuario user(nombreUsuario, passwordUsuario);
 
-        if (user.comprobarContrasenya())
+        if (user.comprobarContrasenya(db))
         {
-            user.loginAndLogout();
+            user.loginAndLogout(db);
             respuesta["mensaje"]= "Has salido.";
         }
         else
@@ -149,14 +169,14 @@ JSON Servidor::registro(JSON receivedObject)
 
     Usuario user(nombreUsuario, passwordUsuario);
 
-    if (user.registro())
+    if (user.registro(db))
     {
         respuesta["Error"]= 2;
         respuesta["mensajeError"]= "Nombre de usuario en uso. Elige otro.";
     }
     else
     {
-        user.insert();
+        user.insert(db);
         respuesta["mensaje"] = "Has completado el registro con éxito";
     } // end if
 
@@ -226,6 +246,7 @@ JSON Servidor::consultarSeccion(JSON receivedObject)
 }
 
 /**
+* Realiza la conexión con la base de datos.
 * Inicia el servidor websocket.
 * El Websocket recibe los mensajes que envía el cliente, y en función del tipo
 * de mensaje indicado en el JSON accederá a la función que corresponda que se
@@ -240,7 +261,23 @@ JSON Servidor::consultarSeccion(JSON receivedObject)
 
 int Servidor::iniciarServidor()
 {
+    //Conexión con la base de datos.
+
+
+    db = getDatabase();
+    bool ok = db.open();
+    if (!ok)
+    {
+        qDebug() << QObject::tr("Error al intentar iniciar la base de datos");
+        qDebug() << db.lastError().text();
+    } // end if
+
+
+    //Se crea el servidor Websocket
+
     ix::WebSocketServer server(9990, "0.0.0.0");
+
+    //Comprobación de certificados
 
     ix::SocketTLSOptions tlsOptions;
 
@@ -266,6 +303,9 @@ int Servidor::iniciarServidor()
             webSocket->setOnMessageCallback(
                 [webSocket, connectionState, &server, this](const ix::WebSocketMessagePtr msg)
                 {
+
+                //Avisos al abrir y cerrar conexiones.
+
                     if (msg->type == ix::WebSocketMessageType::Open)
                     {
                         qDebug() << QObject::tr("Nueva conexion");
@@ -279,7 +319,6 @@ int Servidor::iniciarServidor()
                     {
                         if (!msg->binary)
                         {
-                            // Text format
                             qDebug() << QObject::tr("Mensaje recibido:");
                         }
 
@@ -296,6 +335,9 @@ int Servidor::iniciarServidor()
                                 if (exists(mensajeRecibido, "tipo"))
                                 {
                                     std::string tipo = mensajeRecibido["tipo"];
+
+                                    //En función del parámetro "tipo" del JSON, se procederá
+                                    //a realizar una función u otra.
 
 
                                     if (tipo=="login")

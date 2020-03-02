@@ -10,10 +10,13 @@
 
 class BaseDatos
 {
-    QSqlDatabase m_db;
+
 public:
     BaseDatos();
     ~BaseDatos();
+
+    QSqlDatabase m_db;
+
     bool iniciar();
     void cerrar();
     QSqlError ultimoError();

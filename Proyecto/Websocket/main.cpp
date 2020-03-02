@@ -19,12 +19,10 @@ using JSON = nlohmann::json;
 
 /*!\file */
 
-
 /**
 * Función principal del programa.
 *
-* Se implementa el soporte para traducciones y se realiza la conexión
-* con la base de datos.
+* Se implementa el soporte para traducciones.
 *
 * A continuación, se procede a iniciar el servidor.
 */
@@ -41,25 +39,6 @@ int main(int argc, char *argv[])
     {
         app.installTranslator(&traductor);
     }; // end if
-
-
-    //Conexión con la base de datos.
-
-
-    QSqlDatabase db;
-    db = (QSqlDatabase::addDatabase("QPSQL"));
-    db.setHostName("localhost");
-    db.setDatabaseName("tech");
-    db.setPort(5432);
-    //3306
-    db.setUserName("postgres");
-    db.setPassword("");
-    bool ok = db.open();
-    if (!ok)
-    {
-        qDebug() << QObject::tr("Error al intentar iniciar la base de datos");
-        qDebug() << db.lastError().text();
-    } // end if
 
 
 

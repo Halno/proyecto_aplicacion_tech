@@ -5,9 +5,10 @@
 #include <QSqlQuery>
 #include "../../Proyecto/Websocket/usuario.h"
 #include "../../Proyecto/Websocket/usuario.cpp"
-#include "../../Proyecto/Websocket/servidor.h"
+#include "../../Proyecto/Websocket/entrada.h"
+#include "../../Proyecto/Websocket/entrada.cpp"
 
-int g_idMensaje = 0;
+int gl_idMensaje = 0;
 
 Testeo::Testeo(QObject *parent) : QObject(parent)
 {
@@ -39,13 +40,15 @@ bool BaseDatos::insertar(QString nombre, QString pass)
 {
 
     QSqlQuery query(m_db);
-    query.prepare("INSERT INTO usuarios (nombre_usuario, password_usuario) VALUES (:nombre_Usuario, :passwordUsuario)");
+    query.prepare("INSERT INTO usuario (nombre_usuario, password_usuario) VALUES (:nombre_Usuario, :passwordUsuario)");
     query.bindValue(":nombre_Usuario", nombre);
     query.bindValue(":passwordUsuario", pass);
 
     bool result = query.exec();
     qDebug() << query.lastError().text();
     return result;
+
+
 
 }
 
@@ -95,10 +98,11 @@ bool BaseDatos::iniciar()
                 m_db.open();
 
                 /// Crea estructura en la base de datos
-                QString sql {"CREATE TABLE usuarios ( \
+                QString sql {"CREATE TABLE usuario ( \
                     id_usuario     SERIAL, \
                     nombre_usuario    varchar(20), \
                     password_usuario    varchar(30), \
+                    sesion_iniciada     boolean, \
                     PRIMARY KEY(id_usuario) \
                 )"};
 
@@ -135,8 +139,8 @@ QSqlError BaseDatos::ultimoError()
 
 int autocalcularIdServidor()
 {
-    g_idMensaje++;
-    return g_idMensaje;
+    gl_idMensaje++;
+    return gl_idMensaje;
 }
 
 bool exists(const JSON& json, const std::string& key)
@@ -165,12 +169,14 @@ TEST_CASE("Test clase Usuario")
 
         CHECK( user.m_nombreUsuario == "NombreDeEjemplo" );
         CHECK( user.m_passwordUsuario == "PasswordDeEjemplo");
-        qDebug () << user.m_nombreUsuario;
-        qDebug () << user.m_passwordUsuario;
 
-        SUBCASE("Insertar usuario")
+        SUBCASE("Métodos base de datos")
         {
-            CHECK(db.insertar(user.m_nombreUsuario, user.m_passwordUsuario) == true);
+            CHECK(user.insert(db.m_db) == true);
+            CHECK(user.registro(db.m_db) == true);
+            CHECK(user.comprobarContrasenya(db.m_db) == true);
+            CHECK(user.loginAndLogout(db.m_db) == true);
+            CHECK(user.loginAndLogout(db.m_db) == true);
         }
 
     }
@@ -181,6 +187,8 @@ TEST_CASE("Test clase Usuario")
 
      db.cerrar();
 }
+
+
 
 TEST_CASE("Funcion exists()")
 {

@@ -11,17 +11,17 @@ void \mbox{\hyperlink{classUsuario_a582cfc5fb035575f66240d1784c50632}{load}} (in
 \item 
 void \mbox{\hyperlink{classUsuario_ab1cdc9970f8f50f4b554a563fd2ab41d}{load}} (Q\+String nombre)
 \item 
-bool \mbox{\hyperlink{classUsuario_abccc47bddb1deac69920f4dcb7a44b97}{update}} ()
+bool \mbox{\hyperlink{classUsuario_af4164d59cbff1c6b19bd489b1cacf743}{update}} (Q\+Sql\+Database db)
 \item 
-bool \mbox{\hyperlink{classUsuario_a6adb77ca92414402116ed0256718b227}{insert}} ()
+bool \mbox{\hyperlink{classUsuario_a26adf3b94603d9265f4de3fc69753f25}{insert}} (Q\+Sql\+Database db)
 \item 
 bool \mbox{\hyperlink{classUsuario_a2e01f0e772aabe9c66ef326eca458405}{remove}} ()
 \item 
-bool \mbox{\hyperlink{classUsuario_a708f7cbd127ba0f9a91a1b5c681fa5e7}{comprobar\+Contrasenya}} ()
+bool \mbox{\hyperlink{classUsuario_a22724fa57c4b6eca3330b8bc384700b5}{comprobar\+Contrasenya}} (Q\+Sql\+Database db)
 \item 
-bool \mbox{\hyperlink{classUsuario_aea05bcbf762bc5c6d1e33990f2c52bf4}{registro}} ()
+bool \mbox{\hyperlink{classUsuario_a8c8c3ee57470ff27e9da55f6e6eb0d17}{registro}} (Q\+Sql\+Database db)
 \item 
-bool \mbox{\hyperlink{classUsuario_a03850510ec70df9a5da7f31e66034d8a}{login\+And\+Logout}} ()
+bool \mbox{\hyperlink{classUsuario_a800927743ba5e998af9a6040baea0b88}{login\+And\+Logout}} (Q\+Sql\+Database db)
 \item 
 \mbox{\Hypertarget{classUsuario_a8776b368054f04bf01dd238efe19166d}\label{classUsuario_a8776b368054f04bf01dd238efe19166d}} 
 bool {\bfseries nueva\+Entrada} (\mbox{\hyperlink{classnlohmann_1_1basic__json}{J\+S\+ON}} json\+Recibido)
@@ -63,17 +63,17 @@ Método constructor para la clase \mbox{\hyperlink{classUsuario}{Usuario}}. Conf
 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classUsuario_a708f7cbd127ba0f9a91a1b5c681fa5e7}\label{classUsuario_a708f7cbd127ba0f9a91a1b5c681fa5e7}} 
+\mbox{\Hypertarget{classUsuario_a22724fa57c4b6eca3330b8bc384700b5}\label{classUsuario_a22724fa57c4b6eca3330b8bc384700b5}} 
 \index{Usuario@{Usuario}!comprobar\+Contrasenya@{comprobar\+Contrasenya}}
 \index{comprobar\+Contrasenya@{comprobar\+Contrasenya}!Usuario@{Usuario}}
 \subsubsection{\texorpdfstring{comprobar\+Contrasenya()}{comprobarContrasenya()}}
-{\footnotesize\ttfamily bool Usuario\+::comprobar\+Contrasenya (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily bool Usuario\+::comprobar\+Contrasenya (\begin{DoxyParamCaption}\item[{Q\+Sql\+Database}]{db }\end{DoxyParamCaption})}
 
-Comprueba que el usuario en cuestión tiene la contraseña insertada por el usuario Si la contraseña es correcta, devuelve true. De lo contrario, devuelve false. \mbox{\Hypertarget{classUsuario_a6adb77ca92414402116ed0256718b227}\label{classUsuario_a6adb77ca92414402116ed0256718b227}} 
+Comprueba que el usuario en cuestión tiene la contraseña insertada por el usuario Si la contraseña es correcta, devuelve true. De lo contrario, devuelve false. \mbox{\Hypertarget{classUsuario_a26adf3b94603d9265f4de3fc69753f25}\label{classUsuario_a26adf3b94603d9265f4de3fc69753f25}} 
 \index{Usuario@{Usuario}!insert@{insert}}
 \index{insert@{insert}!Usuario@{Usuario}}
 \subsubsection{\texorpdfstring{insert()}{insert()}}
-{\footnotesize\ttfamily bool Usuario\+::insert (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily bool Usuario\+::insert (\begin{DoxyParamCaption}\item[{Q\+Sql\+Database}]{db }\end{DoxyParamCaption})}
 
 Inserta al usuario en la base de datos. \mbox{\Hypertarget{classUsuario_a582cfc5fb035575f66240d1784c50632}\label{classUsuario_a582cfc5fb035575f66240d1784c50632}} 
 \index{Usuario@{Usuario}!load@{load}}
@@ -87,17 +87,17 @@ Se realiza una búsqueda de usuario en base a su ID. Se cargan los datos del usu
 \subsubsection{\texorpdfstring{load()}{load()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily void Usuario\+::load (\begin{DoxyParamCaption}\item[{Q\+String}]{nombre }\end{DoxyParamCaption})}
 
-Se realiza una búsqueda de usuario en base a su nombre. Se cargan los datos del usuario encontrado en la base de datos en los parámetros del objeto. \mbox{\Hypertarget{classUsuario_a03850510ec70df9a5da7f31e66034d8a}\label{classUsuario_a03850510ec70df9a5da7f31e66034d8a}} 
+Se realiza una búsqueda de usuario en base a su nombre. Se cargan los datos del usuario encontrado en la base de datos en los parámetros del objeto. \mbox{\Hypertarget{classUsuario_a800927743ba5e998af9a6040baea0b88}\label{classUsuario_a800927743ba5e998af9a6040baea0b88}} 
 \index{Usuario@{Usuario}!login\+And\+Logout@{login\+And\+Logout}}
 \index{login\+And\+Logout@{login\+And\+Logout}!Usuario@{Usuario}}
 \subsubsection{\texorpdfstring{login\+And\+Logout()}{loginAndLogout()}}
-{\footnotesize\ttfamily bool Usuario\+::login\+And\+Logout (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily bool Usuario\+::login\+And\+Logout (\begin{DoxyParamCaption}\item[{Q\+Sql\+Database}]{db }\end{DoxyParamCaption})}
 
-Esta función cambia el estado de inicio de sesión del usuario. Si en la base de datos está en true lo cambia a false, y viceversa. La función devuelve true si ha funcionado bien y false si se ha ocasionado algún error. \mbox{\Hypertarget{classUsuario_aea05bcbf762bc5c6d1e33990f2c52bf4}\label{classUsuario_aea05bcbf762bc5c6d1e33990f2c52bf4}} 
+Esta función cambia el estado de inicio de sesión del usuario. Si en la base de datos está en true lo cambia a false, y viceversa. La función devuelve true si ha funcionado bien y false si se ha ocasionado algún error. \mbox{\Hypertarget{classUsuario_a8c8c3ee57470ff27e9da55f6e6eb0d17}\label{classUsuario_a8c8c3ee57470ff27e9da55f6e6eb0d17}} 
 \index{Usuario@{Usuario}!registro@{registro}}
 \index{registro@{registro}!Usuario@{Usuario}}
 \subsubsection{\texorpdfstring{registro()}{registro()}}
-{\footnotesize\ttfamily bool Usuario\+::registro (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily bool Usuario\+::registro (\begin{DoxyParamCaption}\item[{Q\+Sql\+Database}]{db }\end{DoxyParamCaption})}
 
 Comprueba la existencia del nombre de usuario en la base de datos. Si existe, devuelve true. De lo contrario, devuelve false. \mbox{\Hypertarget{classUsuario_a2e01f0e772aabe9c66ef326eca458405}\label{classUsuario_a2e01f0e772aabe9c66ef326eca458405}} 
 \index{Usuario@{Usuario}!remove@{remove}}
@@ -105,11 +105,11 @@ Comprueba la existencia del nombre de usuario en la base de datos. Si existe, de
 \subsubsection{\texorpdfstring{remove()}{remove()}}
 {\footnotesize\ttfamily bool Usuario\+::remove (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-Elimina al usuario de la base de datos, realizando la búsqueda por su ID. \mbox{\Hypertarget{classUsuario_abccc47bddb1deac69920f4dcb7a44b97}\label{classUsuario_abccc47bddb1deac69920f4dcb7a44b97}} 
+Elimina al usuario de la base de datos, realizando la búsqueda por su ID. \mbox{\Hypertarget{classUsuario_af4164d59cbff1c6b19bd489b1cacf743}\label{classUsuario_af4164d59cbff1c6b19bd489b1cacf743}} 
 \index{Usuario@{Usuario}!update@{update}}
 \index{update@{update}!Usuario@{Usuario}}
 \subsubsection{\texorpdfstring{update()}{update()}}
-{\footnotesize\ttfamily bool Usuario\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily bool Usuario\+::update (\begin{DoxyParamCaption}\item[{Q\+Sql\+Database}]{db }\end{DoxyParamCaption})}
 
 Actualiza la contraseña del usuario en la base de datos. 
 

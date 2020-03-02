@@ -74,9 +74,9 @@ void Usuario::load(QString nombre)
  * Actualiza la contraseña del usuario en la base de datos.
 */
 
-bool Usuario::update()
+bool Usuario::update(QSqlDatabase db)
 {
-    QSqlQuery q;
+    QSqlQuery q(db);
 
         q.prepare("UPDATE usuario SET password_usuario = :passwordUsuario WHERE id_usuario = :idUsuario");
         q.bindValue(":idUsuario", m_idUsuario);
@@ -90,15 +90,16 @@ bool Usuario::update()
  * Inserta al usuario en la base de datos.
 */
 
-bool Usuario::insert()
+bool Usuario::insert(QSqlDatabase db)
 {
-    QSqlQuery q;
+    QSqlQuery q(db);
 
     q.prepare("INSERT INTO usuario (nombre_usuario, password_usuario) VALUES (:nombreUsuario, :passwordUsuario)");
     q.bindValue(":nombreUsuario", m_nombreUsuario);
     q.bindValue(":passwordUsuario", m_passwordUsuario);
 
     bool result {q.exec()};
+    qDebug() << q.lastError().text();
     return result;
 }
 
@@ -126,10 +127,10 @@ bool Usuario::remove()
  * Si existe, devuelve true. De lo contrario, devuelve false.
 */
 
-bool Usuario::registro()
+bool Usuario::registro(QSqlDatabase db)
 {
     bool result = false;
-    QSqlQuery orden;
+    QSqlQuery orden(db);
     orden.prepare("SELECT * FROM usuario WHERE nombre_usuario = :nombre_usuario LIMIT 1");
     orden.bindValue(":nombre_usuario", m_nombreUsuario);
 
@@ -147,11 +148,11 @@ bool Usuario::registro()
  * De lo contrario, devuelve false.
 */
 
-bool Usuario::comprobarContrasenya()
+bool Usuario::comprobarContrasenya(QSqlDatabase db)
 {
 
     bool result = false;
-    QSqlQuery orden;
+    QSqlQuery orden(db);
     orden.prepare("SELECT * FROM usuario WHERE nombre_usuario = :nombreUsuario AND password_usuario = :passwordUsuario LIMIT 1");
     orden.bindValue(":nombreUsuario", m_nombreUsuario);
     orden.bindValue(":passwordUsuario", m_passwordUsuario);
@@ -170,9 +171,9 @@ bool Usuario::comprobarContrasenya()
  * La función devuelve true si ha funcionado bien y false si se ha ocasionado algún error.
 */
 
-bool Usuario::loginAndLogout()
+bool Usuario::loginAndLogout(QSqlDatabase db)
 {
-    QSqlQuery orden;
+    QSqlQuery orden(db);
     orden.prepare("UPDATE usuario SET sesion_iniciada = NOT sesion_iniciada WHERE nombre_usuario = :nombreUsuario");
     orden.bindValue(":nombreUsuario", m_nombreUsuario);
     if (orden.exec())

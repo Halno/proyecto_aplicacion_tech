@@ -28,13 +28,13 @@ public:
     void load(int id);
     void load(QString nombre);
 
-    bool update();
-    bool insert();
+    bool update(QSqlDatabase db);
+    bool insert(QSqlDatabase db);
     bool remove();
-    bool comprobarContrasenya();
+    bool comprobarContrasenya(QSqlDatabase db);
 
-    bool registro();
-    bool loginAndLogout();
+    bool registro(QSqlDatabase db);
+    bool loginAndLogout(QSqlDatabase db);
     bool nuevaEntrada(JSON jsonRecibido);
 };
 

@@ -15,6 +15,7 @@ var searchData=
   ['get_5fstring',['get_string',['../classnlohmann_1_1detail_1_1lexer.html#a54aa290ff2f60218a8f35f1ebf81666d',1,'nlohmann::detail::lexer']]],
   ['get_5fto',['get_to',['../classnlohmann_1_1basic__json.html#a8a3db7d78f74232d3a6fb8f1abf69709',1,'nlohmann::basic_json']]],
   ['get_5ftoken_5fstring',['get_token_string',['../classnlohmann_1_1detail_1_1lexer.html#a4aef7e72e539be04e139c34872421f2a',1,'nlohmann::detail::lexer']]],
+  ['getdatabase',['getDatabase',['../classServidor.html#ae784cce9d89f9f9ca0804abdb9c3c9d7',1,'Servidor']]],
   ['grisu2',['grisu2',['../namespacenlohmann_1_1detail_1_1dtoa__impl.html#a05b681dcb8569b9784c6dccfadb01633',1,'nlohmann::detail::dtoa_impl::grisu2(char *buf, int &amp;len, int &amp;decimal_exponent, diyfp m_minus, diyfp v, diyfp m_plus)'],['../namespacenlohmann_1_1detail_1_1dtoa__impl.html#aab7a9670a4f4704a5d0347ad7588576b',1,'nlohmann::detail::dtoa_impl::grisu2(char *buf, int &amp;len, int &amp;decimal_exponent, FloatType value)']]],
   ['grisu2_5fdigit_5fgen',['grisu2_digit_gen',['../namespacenlohmann_1_1detail_1_1dtoa__impl.html#a9b899c72b0e1e3dd46d75c2b4e6bcdfb',1,'nlohmann::detail::dtoa_impl']]]
 ];

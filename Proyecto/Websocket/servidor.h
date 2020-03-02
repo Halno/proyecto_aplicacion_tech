@@ -1,6 +1,7 @@
 #ifndef SERVIDOR_H
 #define SERVIDOR_H
 #include "json.hpp"
+#include <QSqlDatabase>
 using JSON = nlohmann::json;
 
 class Servidor
@@ -10,6 +11,8 @@ class Servidor
 public:
 
     Servidor();
+
+    QSqlDatabase getDatabase();
 
     int iniciarServidor();
     int autocalcularIdServidor();
