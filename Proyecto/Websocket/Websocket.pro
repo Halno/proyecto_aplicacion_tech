@@ -28,28 +28,14 @@ SOURCES += \
     entrada.cpp \
     servidor.cpp
 
-LIBS += -pthread -lz -lssl -lcrypto
+LIBS += -pthread -lz
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../IXWebSocket/build/release/ -lixwebsocket
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../IXWebSocket/build/debug/ -lixwebsocket
-else:unix: LIBS += -L$$PWD/../../IXWebSocket/build/ -lixwebsocket
 
-INCLUDEPATH += $$PWD/../../IXWebSocket/build
-DEPENDPATH += $$PWD/../../IXWebSocket/build
-
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../IXWebSocket/build/release/libixwebsocket.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../IXWebSocket/build/debug/libixwebsocket.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../IXWebSocket/build/release/ixwebsocket.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../IXWebSocket/build/debug/ixwebsocket.lib
-else:unix: PRE_TARGETDEPS += $$PWD/../../IXWebSocket/build/libixwebsocket.a
-
-DISTFILES += \
-    ../../Escritorio/miservidorwebsocket/miservidorwebsocket.pro.user
 
 HEADERS += \
     json.hpp \
@@ -57,22 +43,21 @@ HEADERS += \
     entrada.h \
     servidor.h
 
-SUBDIRS += \
-    ../../Escritorio/miservidorwebsocket/miservidorwebsocket.pro \
-    ../../Escritorio/miservidorwebsocket/miservidorwebsocket.pro
 
-FORMS += \
-    ../../Escritorio/miservidorwebsocket/mainwindow.ui
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../IXWebSocket/build/release/ -lixwebsocket
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../IXWebSocket/build/debug/ -lixwebsocket
-else:unix: LIBS += -L$$PWD/../../IXWebSocket/build/ -lixwebsocket
+#FORMS += \
+#    ../../Escritorio/miservidorwebsocket/mainwindow.ui
 
-INCLUDEPATH += $$PWD/../../IXWebSocket/build
-DEPENDPATH += $$PWD/../../IXWebSocket/build
 
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../IXWebSocket/build/release/libixwebsocket.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../IXWebSocket/build/debug/libixwebsocket.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../IXWebSocket/build/release/ixwebsocket.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../IXWebSocket/build/debug/ixwebsocket.lib
-else:unix: PRE_TARGETDEPS += $$PWD/../../IXWebSocket/build/libixwebsocket.a
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/websocket/lib/release/ -lixwebsocket
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/websocket/lib/debug/ -lixwebsocket
+else:unix: LIBS += -L$$PWD/websocket/lib/ -lixwebsocket
+
+INCLUDEPATH += $$PWD/websocket/include
+DEPENDPATH += $$PWD/websocket/include
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/websocket/lib/release/libixwebsocket.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/websocket/lib/debug/libixwebsocket.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/websocket/lib/release/ixwebsocket.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/websocket/lib/debug/ixwebsocket.lib
+else:unix: PRE_TARGETDEPS += $$PWD/websocket/lib/libixwebsocket.a

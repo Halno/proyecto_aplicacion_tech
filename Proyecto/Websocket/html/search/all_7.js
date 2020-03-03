@@ -1,10 +1,5 @@
 var searchData=
 [
-  ['has_5ffrom_5fjson',['has_from_json',['../structnlohmann_1_1detail_1_1has__from__json.html',1,'nlohmann::detail']]],
-  ['has_5ffrom_5fjson_3c_20basicjsontype_2c_20t_2c_20enable_5fif_5ft_3c_20not_20is_5fbasic_5fjson_3c_20t_20_3e_3a_3avalue_20_3e_20_3e',['has_from_json&lt; BasicJsonType, T, enable_if_t&lt; not is_basic_json&lt; T &gt;::value &gt; &gt;',['../structnlohmann_1_1detail_1_1has__from__json_3_01BasicJsonType_00_01T_00_01enable__if__t_3_01not_5e786a91cad76ed1c14f425887b41640.html',1,'nlohmann::detail']]],
-  ['has_5fnon_5fdefault_5ffrom_5fjson',['has_non_default_from_json',['../structnlohmann_1_1detail_1_1has__non__default__from__json.html',1,'nlohmann::detail']]],
-  ['has_5fnon_5fdefault_5ffrom_5fjson_3c_20basicjsontype_2c_20t_2c_20enable_5fif_5ft_3c_20not_20is_5fbasic_5fjson_3c_20t_20_3e_3a_3avalue_20_3e_20_3e',['has_non_default_from_json&lt; BasicJsonType, T, enable_if_t&lt; not is_basic_json&lt; T &gt;::value &gt; &gt;',['../structnlohmann_1_1detail_1_1has__non__default__from__json_3_01BasicJsonType_00_01T_00_01enable__a9e4562f31f7ed523e6e0f675606b0f2.html',1,'nlohmann::detail']]],
-  ['has_5fto_5fjson',['has_to_json',['../structnlohmann_1_1detail_1_1has__to__json.html',1,'nlohmann::detail']]],
-  ['has_5fto_5fjson_3c_20basicjsontype_2c_20t_2c_20enable_5fif_5ft_3c_20not_20is_5fbasic_5fjson_3c_20t_20_3e_3a_3avalue_20_3e_20_3e',['has_to_json&lt; BasicJsonType, T, enable_if_t&lt; not is_basic_json&lt; T &gt;::value &gt; &gt;',['../structnlohmann_1_1detail_1_1has__to__json_3_01BasicJsonType_00_01T_00_01enable__if__t_3_01not_01737900a749c335e922e2f74e2face5e4.html',1,'nlohmann::detail']]],
-  ['hash_3c_20nlohmann_3a_3ajson_20_3e',['hash&lt; nlohmann::json &gt;',['../structstd_1_1hash_3_01nlohmann_1_1json_01_4.html',1,'std']]]
+  ['registro',['registro',['../classServidor.html#adc19f6be9f624330db206a9d98c981a5',1,'Servidor::registro()'],['../classUsuario.html#a8c8c3ee57470ff27e9da55f6e6eb0d17',1,'Usuario::registro()']]],
+  ['remove',['remove',['../classEntrada.html#a352b5c6fad6fe043a06625c995b78e32',1,'Entrada::remove()'],['../classUsuario.html#a2e01f0e772aabe9c66ef326eca458405',1,'Usuario::remove()']]]
 ];

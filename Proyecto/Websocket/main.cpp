@@ -1,9 +1,9 @@
 #include <QCoreApplication>
 #include "json.hpp"
 #include <iostream>
-#include "../../IXWebSocket/ixwebsocket/IXWebSocketServer.h"
-#include "../../IXWebSocket/ixwebsocket/IXWebSocket.h"
-#include "../../IXWebSocket/ixwebsocket/IXConnectionState.h"
+#include "ixwebsocket/IXWebSocketServer.h"
+#include "ixwebsocket/IXWebSocket.h"
+#include "ixwebsocket/IXConnectionState.h"
 #include "usuario.h"
 #include "servidor.h"
 #include <QString>

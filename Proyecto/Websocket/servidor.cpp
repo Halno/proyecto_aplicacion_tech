@@ -2,9 +2,9 @@
 #include <QCoreApplication>
 #include "json.hpp"
 #include <iostream>
-#include "../../IXWebSocket/ixwebsocket/IXWebSocketServer.h"
-#include "../../IXWebSocket/ixwebsocket/IXWebSocket.h"
-#include "../../IXWebSocket/ixwebsocket/IXConnectionState.h"
+#include "ixwebsocket/IXWebSocketServer.h"
+#include "ixwebsocket/IXWebSocket.h"
+#include "ixwebsocket/IXConnectionState.h"
 #include "usuario.h"
 #include "entrada.h"
 #include <QString>
@@ -279,19 +279,19 @@ int Servidor::iniciarServidor()
 
     //Comprobación de certificados
 
-    ix::SocketTLSOptions tlsOptions;
+    //ix::SocketTLSOptions tlsOptions;
 
-    tlsOptions.tls = true;
-    tlsOptions.certFile = "./cert/localhost.crt";
-    tlsOptions.keyFile = "./cert/localhost.key";
-    tlsOptions.caFile = "NONE";
+    //tlsOptions.tls = true;
+    //tlsOptions.certFile = "./cert/localhost.crt";
+    //tlsOptions.keyFile = "./cert/localhost.key";
+    //tlsOptions.caFile = "NONE";
 
-    if (tlsOptions.isValid())
-    {
-        std::cerr << "SSL valid" << std::endl;
-    } // end if
+    //if (tlsOptions.isValid())
+    //{
+      //  std::cerr << "SSL valid" << std::endl;
+    //} // end if
 
-    server.setTLSOptions(tlsOptions);
+    //server.setTLSOptions(tlsOptions);
 
     qDebug() << QObject::tr("Bienvenido.");
 

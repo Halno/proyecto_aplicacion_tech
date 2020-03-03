@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_SQL_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../Websocket -I. -I../../IXWebSocket/build -I../../IXWebSocket/build -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtSql -isystem /usr/include/qt5/QtCore -I. -I/usr/lib64/qt5/mkspecs/linux-g++
+INCPATH       = -I../Websocket -I. -I../Websocket/websocket/include -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtSql -isystem /usr/include/qt5/QtCore -I. -I/usr/lib64/qt5/mkspecs/linux-g++
 QMAKE         = /usr/bin/qmake-qt5
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -38,7 +38,7 @@ DISTNAME      = tech1.0.0
 DISTDIR = /home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Proyecto/build-Websocket-Desktop-Debug/.tmp/tech1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS) -pthread -lz -lssl -lcrypto -L/home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Proyecto/Websocket/../../IXWebSocket/build/ -lixwebsocket -lQt5Sql -L/usr/lib64 -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) -pthread -lz -L/home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Proyecto/Websocket/websocket/lib/ -lixwebsocket -lQt5Sql -L/usr/lib64 -lQt5Core -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -58,8 +58,7 @@ OBJECTS       = main.o \
 		usuario.o \
 		entrada.o \
 		servidor.o
-DIST          = ../../Escritorio/miservidorwebsocket/miservidorwebsocket.pro.user \
-		/usr/lib64/qt5/mkspecs/features/spec_pre.prf \
+DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/common/unix.conf \
 		/usr/lib64/qt5/mkspecs/common/linux.conf \
 		/usr/lib64/qt5/mkspecs/common/sanitize.conf \
@@ -249,7 +248,7 @@ TARGET        = tech
 first: all
 ####### Build rules
 
-$(TARGET): /home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Proyecto/Websocket/../../IXWebSocket/build/libixwebsocket.a /home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Proyecto/Websocket/../../IXWebSocket/build/libixwebsocket.a $(OBJECTS)  
+$(TARGET): /home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Proyecto/Websocket/websocket/lib/libixwebsocket.a $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: ../Websocket/Websocket.pro /usr/lib64/qt5/mkspecs/linux-g++/qmake.conf /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
