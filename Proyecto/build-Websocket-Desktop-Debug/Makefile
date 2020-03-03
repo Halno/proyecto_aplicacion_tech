@@ -672,27 +672,27 @@ compiler_clean: compiler_moc_predefs_clean
 ####### Compile
 
 main.o: ../Websocket/main.cpp ../Websocket/json.hpp \
-		../../IXWebSocket/ixwebsocket/IXWebSocketServer.h \
-		../../IXWebSocket/ixwebsocket/IXSocketServer.h \
-		../../IXWebSocket/ixwebsocket/IXConnectionState.h \
-		../../IXWebSocket/ixwebsocket/IXSocketTLSOptions.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocket.h \
-		../../IXWebSocket/ixwebsocket/IXProgressCallback.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketCloseConstants.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketErrorInfo.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.h \
-		../../IXWebSocket/ixwebsocket/IXCancellationRequest.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketMessage.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketCloseInfo.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketMessageType.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketOpenInfo.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateOptions.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketSendInfo.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketTransport.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketHandshake.h \
-		../../IXWebSocket/ixwebsocket/IXSocket.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketInitResult.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketServer.h \
+		../Websocket/websocket/include/ixwebsocket/IXSocketServer.h \
+		../Websocket/websocket/include/ixwebsocket/IXConnectionState.h \
+		../Websocket/websocket/include/ixwebsocket/IXSocketTLSOptions.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocket.h \
+		../Websocket/websocket/include/ixwebsocket/IXProgressCallback.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketCloseConstants.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketErrorInfo.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketHttpHeaders.h \
+		../Websocket/websocket/include/ixwebsocket/IXCancellationRequest.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketMessage.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketCloseInfo.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketMessageType.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketOpenInfo.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketPerMessageDeflateOptions.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketSendInfo.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketTransport.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketHandshake.h \
+		../Websocket/websocket/include/ixwebsocket/IXSocket.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketInitResult.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketPerMessageDeflate.h \
 		../Websocket/usuario.h \
 		../Websocket/servidor.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../Websocket/main.cpp
@@ -707,45 +707,36 @@ entrada.o: ../Websocket/entrada.cpp ../Websocket/entrada.h \
 
 servidor.o: ../Websocket/servidor.cpp ../Websocket/servidor.h \
 		../Websocket/json.hpp \
-		../../IXWebSocket/ixwebsocket/IXWebSocketServer.h \
-		../../IXWebSocket/ixwebsocket/IXSocketServer.h \
-		../../IXWebSocket/ixwebsocket/IXConnectionState.h \
-		../../IXWebSocket/ixwebsocket/IXSocketTLSOptions.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocket.h \
-		../../IXWebSocket/ixwebsocket/IXProgressCallback.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketCloseConstants.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketErrorInfo.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.h \
-		../../IXWebSocket/ixwebsocket/IXCancellationRequest.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketMessage.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketCloseInfo.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketMessageType.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketOpenInfo.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateOptions.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketSendInfo.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketTransport.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketHandshake.h \
-		../../IXWebSocket/ixwebsocket/IXSocket.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketInitResult.h \
-		../../IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketServer.h \
+		../Websocket/websocket/include/ixwebsocket/IXSocketServer.h \
+		../Websocket/websocket/include/ixwebsocket/IXConnectionState.h \
+		../Websocket/websocket/include/ixwebsocket/IXSocketTLSOptions.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocket.h \
+		../Websocket/websocket/include/ixwebsocket/IXProgressCallback.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketCloseConstants.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketErrorInfo.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketHttpHeaders.h \
+		../Websocket/websocket/include/ixwebsocket/IXCancellationRequest.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketMessage.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketCloseInfo.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketMessageType.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketOpenInfo.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketPerMessageDeflateOptions.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketSendInfo.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketTransport.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketHandshake.h \
+		../Websocket/websocket/include/ixwebsocket/IXSocket.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketInitResult.h \
+		../Websocket/websocket/include/ixwebsocket/IXWebSocketPerMessageDeflate.h \
 		../Websocket/usuario.h \
 		../Websocket/entrada.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o servidor.o ../Websocket/servidor.cpp
 
 ####### Install
 
-install_target: first FORCE
-	@test -d $(INSTALL_ROOT)/opt/tech/bin || mkdir -p $(INSTALL_ROOT)/opt/tech/bin
-	-$(QINSTALL_PROGRAM) $(QMAKE_TARGET) $(INSTALL_ROOT)/opt/tech/bin/$(QMAKE_TARGET)
+install:  FORCE
 
-uninstall_target: FORCE
-	-$(DEL_FILE) $(INSTALL_ROOT)/opt/tech/bin/$(QMAKE_TARGET)
-	-$(DEL_DIR) $(INSTALL_ROOT)/opt/tech/bin/ 
-
-
-install: install_target  FORCE
-
-uninstall: uninstall_target  FORCE
+uninstall:  FORCE
 
 FORCE:
 
