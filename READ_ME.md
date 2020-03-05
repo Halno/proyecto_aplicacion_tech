@@ -18,6 +18,12 @@ que sean los propios usuarios los que puedan crear este contenido.
 
 
 
+**PASOS PREVIOS**
+
+Antes de iniciar el programa, se ha de realizar la importación de la base de datos. Se debe importar el archivo dump.sql, que se encuentra
+en la carpeta junto al resto de archivos.
+
+
 **FUNCIONAMIENTO**
 
 Al acceder a la página web, uno se puede o bien registrar si no tiene cuenta o iniciar sesión en el caso de que ya la tenga.

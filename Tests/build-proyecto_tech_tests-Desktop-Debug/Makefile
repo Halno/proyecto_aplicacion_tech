@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_SQL_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../proyecto_tech_tests -I. -I../../Proyecto/Websocket -I../../Proyecto/Websocket/websocket/include -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtSql -isystem /usr/include/qt5/QtCore -I. -I/usr/lib64/qt5/mkspecs/linux-g++
+INCPATH       = -I../proyecto_tech_tests -I. -I../../Proyecto/Servidor -I../../Proyecto/Servidor/websocket/include -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtSql -isystem /usr/include/qt5/QtCore -I. -I/usr/lib64/qt5/mkspecs/linux-g++
 QMAKE         = /usr/bin/qmake-qt5
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -38,7 +38,7 @@ DISTNAME      = tests_tech1.0.0
 DISTDIR = /home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Tests/build-proyecto_tech_tests-Desktop-Debug/.tmp/tests_tech1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS) -L/home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Tests/proyecto_tech_tests/../../Proyecto/Websocket/websocket/lib/ -lixwebsocket -lQt5Sql -L/usr/lib64 -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) -L/home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Tests/proyecto_tech_tests/../../Proyecto/Servidor/websocket/lib/ -lixwebsocket -lQt5Sql -L/usr/lib64 -lQt5Core -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -51,8 +51,12 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../proyecto_tech_tests/main.cpp \
+		../../Proyecto/Servidor/usuario.cpp \
+		../../Proyecto/Servidor/entrada.cpp \
 		../proyecto_tech_tests/testeo.cpp moc_testeo.cpp
 OBJECTS       = main.o \
+		usuario.o \
+		entrada.o \
 		testeo.o \
 		moc_testeo.o
 DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
@@ -231,9 +235,11 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/features/yacc.prf \
 		/usr/lib64/qt5/mkspecs/features/lex.prf \
 		../proyecto_tech_tests/proyecto_tech_tests.pro ../proyecto_tech_tests/testeo.h \
-		../../Proyecto/Websocket/usuario.h \
-		../../Proyecto/Websocket/entrada.h \
+		../../Proyecto/Servidor/usuario.h \
+		../../Proyecto/Servidor/entrada.h \
 		../proyecto_tech_tests/doctest.h ../proyecto_tech_tests/main.cpp \
+		../../Proyecto/Servidor/usuario.cpp \
+		../../Proyecto/Servidor/entrada.cpp \
 		../proyecto_tech_tests/testeo.cpp
 QMAKE_TARGET  = tests_tech
 DESTDIR       = 
@@ -243,7 +249,7 @@ TARGET        = tests_tech
 first: all
 ####### Build rules
 
-$(TARGET): /home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Tests/proyecto_tech_tests/../../Proyecto/Websocket/websocket/lib/libixwebsocket.a $(OBJECTS)  
+$(TARGET): /home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Tests/proyecto_tech_tests/../../Proyecto/Servidor/websocket/lib/libixwebsocket.a $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: ../proyecto_tech_tests/proyecto_tech_tests.pro /usr/lib64/qt5/mkspecs/linux-g++/qmake.conf /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
@@ -618,8 +624,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../proyecto_tech_tests/testeo.h ../../Proyecto/Websocket/usuario.h ../../Proyecto/Websocket/entrada.h ../proyecto_tech_tests/doctest.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../proyecto_tech_tests/main.cpp ../proyecto_tech_tests/testeo.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../proyecto_tech_tests/testeo.h ../../Proyecto/Servidor/usuario.h ../../Proyecto/Servidor/entrada.h ../proyecto_tech_tests/doctest.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../proyecto_tech_tests/main.cpp ../../Proyecto/Servidor/usuario.cpp ../../Proyecto/Servidor/entrada.cpp ../proyecto_tech_tests/testeo.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -658,7 +664,7 @@ moc_testeo.cpp: ../proyecto_tech_tests/doctest.h \
 		../proyecto_tech_tests/testeo.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Tests/proyecto_tech_tests -I/home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Proyecto/Websocket -I/home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Proyecto/Websocket/websocket/include -I/usr/include/qt5 -I/usr/include/qt5/QtSql -I/usr/include/qt5/QtCore -I. -I/usr/include/c++/7 -I/usr/include/c++/7/x86_64-suse-linux -I/usr/include/c++/7/backward -I/usr/lib64/gcc/x86_64-suse-linux/7/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/7/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include ../proyecto_tech_tests/testeo.h -o moc_testeo.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Tests/proyecto_tech_tests -I/home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Proyecto/Servidor -I/home/usuario/Escritorio/PROYECTO_APLICACION_TECH/Proyecto/Servidor/websocket/include -I/usr/include/qt5 -I/usr/include/qt5/QtSql -I/usr/include/qt5/QtCore -I. -I/usr/include/c++/7 -I/usr/include/c++/7/x86_64-suse-linux -I/usr/include/c++/7/backward -I/usr/lib64/gcc/x86_64-suse-linux/7/include -I/usr/local/include -I/usr/lib64/gcc/x86_64-suse-linux/7/include-fixed -I/usr/x86_64-suse-linux/include -I/usr/include ../proyecto_tech_tests/testeo.h -o moc_testeo.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -676,13 +682,16 @@ main.o: ../proyecto_tech_tests/main.cpp ../proyecto_tech_tests/testeo.h \
 		../proyecto_tech_tests/doctest.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../proyecto_tech_tests/main.cpp
 
+usuario.o: ../../Proyecto/Servidor/usuario.cpp ../../Proyecto/Servidor/usuario.h \
+		../../Proyecto/Servidor/json.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o usuario.o ../../Proyecto/Servidor/usuario.cpp
+
+entrada.o: ../../Proyecto/Servidor/entrada.cpp ../../Proyecto/Servidor/entrada.h \
+		../../Proyecto/Servidor/json.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o entrada.o ../../Proyecto/Servidor/entrada.cpp
+
 testeo.o: ../proyecto_tech_tests/testeo.cpp ../proyecto_tech_tests/testeo.h \
-		../proyecto_tech_tests/doctest.h \
-		../../Proyecto/Websocket/usuario.h \
-		../../Proyecto/Websocket/json.hpp \
-		../../Proyecto/Websocket/usuario.cpp \
-		../../Proyecto/Websocket/entrada.h \
-		../../Proyecto/Websocket/entrada.cpp
+		../proyecto_tech_tests/doctest.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o testeo.o ../proyecto_tech_tests/testeo.cpp
 
 moc_testeo.o: moc_testeo.cpp 

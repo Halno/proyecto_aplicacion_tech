@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Tech Application: main.cpp File Reference</title>
+<title>Tech Application: ArchivoConfiguracion Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -62,73 +62,65 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="classArchivoConfiguracion-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">main.cpp File Reference</div>  </div>
+<div class="title">ArchivoConfiguracion Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;QCoreApplication&gt;</code><br />
-<code>#include &quot;json.hpp&quot;</code><br />
-<code>#include &lt;iostream&gt;</code><br />
-<code>#include &quot;ixwebsocket/IXWebSocketServer.h&quot;</code><br />
-<code>#include &quot;ixwebsocket/IXWebSocket.h&quot;</code><br />
-<code>#include &quot;ixwebsocket/IXConnectionState.h&quot;</code><br />
-<code>#include &quot;usuario.h&quot;</code><br />
-<code>#include &quot;servidor.h&quot;</code><br />
-<code>#include &lt;QString&gt;</code><br />
-<code>#include &lt;QJsonDocument&gt;</code><br />
-<code>#include &lt;QJsonValue&gt;</code><br />
-<code>#include &lt;QDebug&gt;</code><br />
-<code>#include &lt;QJsonObject&gt;</code><br />
-<code>#include &lt;QJsonArray&gt;</code><br />
-<code>#include &lt;QSqlDatabase&gt;</code><br />
-<code>#include &lt;QTranslator&gt;</code><br />
-<code>#include &quot;QSqlError&quot;</code><br />
-</div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:ab6104b89642419db4e355b7b2e40abbe"><td class="memItemLeft" align="right" valign="top"><a id="ab6104b89642419db4e355b7b2e40abbe"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>JSON</b> = nlohmann::json</td></tr>
-<tr class="separator:ab6104b89642419db4e355b7b2e40abbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
-<tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ad3fa1f33caae8abc3ed42b654d0bf638"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArchivoConfiguracion.html#ad3fa1f33caae8abc3ed42b654d0bf638">ArchivoConfiguracion</a> ()</td></tr>
+<tr class="separator:ad3fa1f33caae8abc3ed42b654d0bf638"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3fb1299938a73be444e51deee868187"><td class="memItemLeft" align="right" valign="top">QSqlDatabase&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArchivoConfiguracion.html#ad3fb1299938a73be444e51deee868187">abrir</a> ()</td></tr>
+<tr class="separator:ad3fb1299938a73be444e51deee868187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05a6a7e6aa22db5a1c54cf98ae67e912"><td class="memItemLeft" align="right" valign="top"><a id="a05a6a7e6aa22db5a1c54cf98ae67e912"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>cerrar</b> ()</td></tr>
+<tr class="separator:a05a6a7e6aa22db5a1c54cf98ae67e912"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a0ddf1224851353fc92bfbff6f499fa97"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ddf1224851353fc92bfbff6f499fa97">&#9670;&nbsp;</a></span>main()</h2>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ad3fa1f33caae8abc3ed42b654d0bf638"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3fa1f33caae8abc3ed42b654d0bf638">&#9670;&nbsp;</a></span>ArchivoConfiguracion()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int main </td>
+          <td class="memname">ArchivoConfiguracion::ArchivoConfiguracion </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>argc</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>argv</em>[]&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Función principal del programa.</p>
-<p>Se implementa el soporte para traducciones.</p>
-<p>A continuación, se procede a iniciar el servidor. </p>
+<p>Método constructor de la clase <a class="el" href="classArchivoConfiguracion.html">ArchivoConfiguracion</a>. </p>
 
 </div>
 </div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad3fb1299938a73be444e51deee868187"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3fb1299938a73be444e51deee868187">&#9670;&nbsp;</a></span>abrir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QSqlDatabase ArchivoConfiguracion::abrir </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Genera la conexión cogiendo los datos del archivo de configuración. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li><a class="el" href="archivoconfiguracion_8h_source.html">archivoconfiguracion.h</a></li>
+<li>archivoconfiguracion.cpp</li>
+</ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

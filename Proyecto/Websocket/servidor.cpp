@@ -5,6 +5,7 @@
 #include "./websocket/include/ixwebsocket/IXWebSocketServer.h"
 #include "./websocket/include/ixwebsocket/IXWebSocket.h"
 #include "./websocket/include/ixwebsocket/IXConnectionState.h"
+#include "archivoconfiguracion.h"
 #include "usuario.h"
 #include "entrada.h"
 #include <QString>
@@ -26,7 +27,8 @@ Servidor::Servidor()
 
 
 /**
- * Crea la base de datos, ajusta sus parámetros y la devuelve para ser empleada.
+ * Crea la base de datos, ajusta sus parámetros y la devuelve para ser empleada. Actualmente en desuso, pues
+ * este proceso se realiza mediante un archivo de configuración.
  */
 
 QSqlDatabase Servidor::getDatabase()
@@ -160,6 +162,7 @@ JSON Servidor::registro(JSON receivedObject)
     respuesta["idServidor"] = autocalcularIdServidor();
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["Error"] = 0;
+    respuesta["tipo_respuesta"]="respuesta_register";
 
     std::string nombre=receivedObject["usuario"];
     QString nombreUsuario = QString::fromUtf8(nombre.c_str());
@@ -237,8 +240,6 @@ JSON Servidor::consultarSeccion(JSON receivedObject)
 
     QString personaje=QString::fromUtf8(per.c_str());
 
-    qDebug() << personaje;
-
     respuesta=Entrada::cargarEntradas(personaje, respuesta);
 
     return respuesta;
@@ -263,15 +264,8 @@ int Servidor::iniciarServidor()
 {
     //Conexión con la base de datos.
 
-
-    db = getDatabase();
-    bool ok = db.open();
-    if (!ok)
-    {
-        qDebug() << QObject::tr("Error al intentar iniciar la base de datos");
-        qDebug() << db.lastError().text();
-    } // end if
-
+    ArchivoConfiguracion config;
+    db=config.abrir();
 
     //Se crea el servidor Websocket
 
@@ -279,19 +273,21 @@ int Servidor::iniciarServidor()
 
     //Comprobación de certificados
 
-    //ix::SocketTLSOptions tlsOptions;
+    /*
+    ix::SocketTLSOptions tlsOptions;
 
-    //tlsOptions.tls = true;
-    //tlsOptions.certFile = "./cert/localhost.crt";
-    //tlsOptions.keyFile = "./cert/localhost.key";
-    //tlsOptions.caFile = "NONE";
+    tlsOptions.tls = true;
+    tlsOptions.certFile = "./cert/localhost.crt";
+    tlsOptions.keyFile = "./cert/localhost.key";
+    /lsOptions.caFile = "NONE";
 
-    //if (tlsOptions.isValid())
-    //{
-      //  std::cerr << "SSL valid" << std::endl;
-    //} // end if
+    if (tlsOptions.isValid())
+    {
+        std::cerr << "SSL valid" << std::endl;
+    } // end if
 
     //server.setTLSOptions(tlsOptions);
+    */
 
     qDebug() << QObject::tr("Bienvenido.");
 

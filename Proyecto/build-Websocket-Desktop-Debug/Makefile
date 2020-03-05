@@ -53,11 +53,13 @@ OBJECTS_DIR   = ./
 SOURCES       = ../Websocket/main.cpp \
 		../Websocket/usuario.cpp \
 		../Websocket/entrada.cpp \
-		../Websocket/servidor.cpp 
+		../Websocket/servidor.cpp \
+		../Websocket/archivoconfiguracion.cpp 
 OBJECTS       = main.o \
 		usuario.o \
 		entrada.o \
-		servidor.o
+		servidor.o \
+		archivoconfiguracion.o
 DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/common/unix.conf \
 		/usr/lib64/qt5/mkspecs/common/linux.conf \
@@ -236,10 +238,12 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		../Websocket/Websocket.pro ../Websocket/json.hpp \
 		../Websocket/usuario.h \
 		../Websocket/entrada.h \
-		../Websocket/servidor.h ../Websocket/main.cpp \
+		../Websocket/servidor.h \
+		../Websocket/archivoconfiguracion.h ../Websocket/main.cpp \
 		../Websocket/usuario.cpp \
 		../Websocket/entrada.cpp \
-		../Websocket/servidor.cpp
+		../Websocket/servidor.cpp \
+		../Websocket/archivoconfiguracion.cpp
 QMAKE_TARGET  = tech
 DESTDIR       = 
 TARGET        = tech
@@ -623,8 +627,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../Websocket/json.hpp ../Websocket/usuario.h ../Websocket/entrada.h ../Websocket/servidor.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../Websocket/main.cpp ../Websocket/usuario.cpp ../Websocket/entrada.cpp ../Websocket/servidor.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../Websocket/json.hpp ../Websocket/usuario.h ../Websocket/entrada.h ../Websocket/servidor.h ../Websocket/archivoconfiguracion.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../Websocket/main.cpp ../Websocket/usuario.cpp ../Websocket/entrada.cpp ../Websocket/servidor.cpp ../Websocket/archivoconfiguracion.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents traductor_es_ES.ts traductor_en_US.ts $(DISTDIR)/
 
 
@@ -728,9 +732,13 @@ servidor.o: ../Websocket/servidor.cpp ../Websocket/servidor.h \
 		../Websocket/websocket/include/ixwebsocket/IXSocket.h \
 		../Websocket/websocket/include/ixwebsocket/IXWebSocketInitResult.h \
 		../Websocket/websocket/include/ixwebsocket/IXWebSocketPerMessageDeflate.h \
+		../Websocket/archivoconfiguracion.h \
 		../Websocket/usuario.h \
 		../Websocket/entrada.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o servidor.o ../Websocket/servidor.cpp
+
+archivoconfiguracion.o: ../Websocket/archivoconfiguracion.cpp ../Websocket/archivoconfiguracion.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o archivoconfiguracion.o ../Websocket/archivoconfiguracion.cpp
 
 ####### Install
 

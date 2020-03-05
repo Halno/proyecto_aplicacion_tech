@@ -26,7 +26,8 @@ SOURCES += \
         main.cpp \
     usuario.cpp \
     entrada.cpp \
-    servidor.cpp
+    servidor.cpp \
+    archivoconfiguracion.cpp
 
 LIBS += -pthread -lz
 
@@ -41,7 +42,8 @@ HEADERS += \
     json.hpp \
     usuario.h \
     entrada.h \
-    servidor.h
+    servidor.h \
+    archivoconfiguracion.h
 
 
 

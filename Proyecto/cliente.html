@@ -114,8 +114,6 @@ let socket = new WebSocket("ws://localhost:9990");
 
 socket.onopen = function(e) 
 {
-  alert("[open] Connection established");
-  alert("Sending to server");
   console.log("Conexion abierta");
 };
 
@@ -140,7 +138,7 @@ socket.onmessage = function(event)
     }
     else
     {
-        alert(`[message] Data received from server: ${event.data}`);
+        alert(`${object["mensajeError"]}`);
     }
   }
   
@@ -160,11 +158,35 @@ socket.onmessage = function(event)
     }
   }
   
+    if (object["tipo_respuesta"]=="respuesta_register")
+  {
+    if (object["Error"]==0)
+    {
+        alert(`${object["mensaje"]}`);
+    }
+    else
+    {
+        alert(`${object["mensajeError"]}`);
+    }
+  }
+  
   if (object["tipo_respuesta"]=="respuesta_seccion")
   {
     if (object["Error"]==0)
     {
         cargarTech(object);
+    }
+    else
+    {
+        alert(`[message] Data received from server: ${event.data}`);
+    }
+  }
+  
+  if (object["tipo_respuesta"]=="respuesta_crearEntrada")
+  {
+    if (object["Error"]==0)
+    {
+        alert(`${object["mensaje"]}`);
     }
     else
     {
@@ -282,6 +304,8 @@ function autocalcularId()
 
 <!--Div barra de navegación-->
 
+
+
 <div id="nav_bar" class="container" style="display:none">
 
     <ul>
@@ -291,6 +315,8 @@ function autocalcularId()
 </div>
 
 <!--Fin Div barra de navegación-->
+
+<h1 style="text-align:center"> TECH </h1>
 
 </br>
 
