@@ -204,15 +204,18 @@ socket.onclose = function(event)
     //alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
   } else
   {
-    // e.g. server process killed or network down
-    // event.code is usually 1006 in this case
-    //alert('[close] Connection died');
+    alert('Ha habido un error. Conexión cortada con el servidor');
+    document.getElementById("login").style.display="block";
+    document.getElementById("nav_bar").style.display="none";
+    document.getElementById("main_page").style.display="none";
+    document.getElementById("tech_encontrada").style.display="none";
+    id_usuario=0;
   }
 };
 
 socket.onerror = function(error)
 {
-  alert(`[error] ${error.message}`);
+  alert(`Error: ${"El servidor no está en marcha"}`);
 };
 
 function cargarTech(object)
@@ -263,6 +266,9 @@ function enviarRegistro()
     
     var mensajeJson = {tipo: "registro", id: id_mensaje, usuario: nombre_Usuario, contrasenya_Usuario: contrasenya}
     socket.send( JSON.stringify(mensajeJson));
+    
+    document.getElementById("id_usuario").value = '';
+    document.getElementById("pass").value = '';
 };
 
 function personaje()
@@ -281,10 +287,17 @@ function anyadirTech()
   var personaje = document.getElementById("pj1").value.toString();
   var contenido_tech = document.getElementById("techParaAnyadir").value.toString();
   
-  var mensajeJson = {tipo: "crearEntrada", id: id_mensaje, usuario: id_usuario, seccion: personaje, tech: contenido_tech}
-  socket.send(JSON.stringify(mensajeJson));
-  
-  document.getElementById("techParaAnyadir").value='';
+  if (contenido_tech=="")
+  {
+    alert(`Error: ${"No puedes crear una entrada sin contenido."}`);
+  }
+  else
+  {
+    var mensajeJson = {tipo: "crearEntrada", id: id_mensaje, usuario: id_usuario, seccion: personaje, tech: contenido_tech}
+    socket.send(JSON.stringify(mensajeJson));
+    
+    document.getElementById("techParaAnyadir").value='';
+  }
 };
 
 
@@ -332,7 +345,7 @@ function autocalcularId()
     
     <button onclick= "enviarLogin()">Iniciar sesión</button>
     <br/>
-    <p> ¿No tienes cuenta? En ese caso, rellena el formulario y haz un click aquí </p>
+    <p> ¿No tienes cuenta? En ese caso, rellena el formulario y haz un click en el botón de abajo. </p>
     <button onclick="enviarRegistro()">Registrarse</button>
     
 </div>

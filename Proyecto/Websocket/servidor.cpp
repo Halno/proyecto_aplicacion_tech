@@ -78,11 +78,13 @@ JSON Servidor::login(JSON receivedObject)
 {
     JSON respuesta;
 
+    //Configuración de campos necesarios para el JSON.
     respuesta["idServidor"] = autocalcularIdServidor();
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["Error"] = 0;
     respuesta["tipo_respuesta"]="respuesta_login";
 
+    //Conversión de datos del campo del JSON a QString.
     std::string nombre=receivedObject["usuario"];
     QString nombreUsuario = QString::fromUtf8(nombre.c_str());
 
@@ -92,13 +94,16 @@ JSON Servidor::login(JSON receivedObject)
     Usuario user(nombreUsuario, passwordUsuario);
 
 
+    //Se comprueba que en la base de datos exista este usuario con esta contraseña.
     if (!user.comprobarContrasenya(db))
     {
+        //Si no existe, se transmite un mensaje de error.
         respuesta["Error"]= 1;
         respuesta["mensajeError"]= "Nombre de usuario y/o contraseña incorrecto(s).";
     }
     else
     {
+        //
         user.loginAndLogout(db);
         user.load(nombreUsuario);
         respuesta["idUsuario"]= user.m_idUsuario;
@@ -119,11 +124,13 @@ JSON Servidor::logout(JSON receivedObject)
 {
     JSON respuesta;
 
+    //Configuración de campos necesarios para el JSON.
     respuesta["idServidor"] = autocalcularIdServidor();
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["Error"] = 0;
     respuesta["tipo_respuesta"]="respuesta_logout";
 
+    //Conversión de datos del campo del JSON a QString.
     std::string nombre=receivedObject["usuario"];
     QString nombreUsuario = QString::fromUtf8(nombre.c_str());
 
@@ -159,11 +166,13 @@ JSON Servidor::registro(JSON receivedObject)
 {
     JSON respuesta;
 
+    //Configuración de campos necesarios para el JSON.
     respuesta["idServidor"] = autocalcularIdServidor();
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["Error"] = 0;
     respuesta["tipo_respuesta"]="respuesta_register";
 
+    //Conversión de datos del campo del JSON a QString.
     std::string nombre=receivedObject["usuario"];
     QString nombreUsuario = QString::fromUtf8(nombre.c_str());
 
@@ -198,11 +207,13 @@ JSON Servidor::crearEntrada(JSON receivedObject)
 {
     JSON respuesta;
 
+    //Configuración de campos necesarios para el JSON.
     respuesta["idServidor"] = autocalcularIdServidor();
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["tipo_respuesta"] ="respuesta_crearEntrada";
     respuesta["Error"]=0;
 
+    //Conversión de datos del campo del JSON a QString.
     std::string per=receivedObject["seccion"];
     QString personaje=QString::fromUtf8(per.c_str());
 
@@ -231,11 +242,13 @@ JSON Servidor::consultarSeccion(JSON receivedObject)
 {
     JSON respuesta;
 
+    //Configuración de campos necesarios para el JSON.
     respuesta["idServidor"] = autocalcularIdServidor();
     respuesta["idCliente"] = receivedObject["id"];
     respuesta["tipo_respuesta"]="respuesta_seccion";
     respuesta["Error"]=0;
 
+    //Conversión de datos del campo del JSON a QString.
     std::string per=receivedObject["seccion"];
 
     QString personaje=QString::fromUtf8(per.c_str());
@@ -279,7 +292,7 @@ int Servidor::iniciarServidor()
     tlsOptions.tls = true;
     tlsOptions.certFile = "./cert/localhost.crt";
     tlsOptions.keyFile = "./cert/localhost.key";
-    /lsOptions.caFile = "NONE";
+    tlsOptions.caFile = "NONE";
 
     if (tlsOptions.isValid())
     {
